@@ -2,14 +2,15 @@ import axios from 'axios'
 import React, { useState } from 'react'
 
 const SignUp = () => {
-
+    
+    const BASE_URL = 'http://localhost:8080'
     const [register, setRegister] = useState({"username": '', "email": '', "password": '', "passwordConfirmation": ''})
 
     const handleSubmit = (event) => {
         event.preventDefault()
         
         if (register.password === register.passwordConfirmation) {
-            axios.post('http://localhost:8080/api/auth/register', register).then((response) => {
+            axios.post(`${BASE_URL}api/auth/register`, register).then((response) => {
                 if (response.data.username === "Username already exists") {
                     window.alert('Username already exists')
                     return
