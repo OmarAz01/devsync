@@ -29,7 +29,7 @@ public class AuthService {
         userRepo.save(user);
 
         String jwt = jwtService.generateToken(user);
-        return AuthenticationResponse.builder().id(user.getId()).username(user.getUsername()).email(user.getEmail())
+        return AuthenticationResponse.builder().id(user.getUserId()).username(user.getUsername()).email(user.getEmail())
                 .role(user.getRole()).jwt(jwt).build();
     }
 
@@ -38,7 +38,7 @@ public class AuthService {
         UserEntity user = userRepo.findByUsername(request.getEmail()).orElseThrow();
         
         String jwt = jwtService.generateToken(user);
-        return AuthenticationResponse.builder().id(user.getId()).username(user.getUsername())
+        return AuthenticationResponse.builder().id(user.getUserId()).username(user.getUsername())
                 .role(user.getRole()).email(user.getEmail()).jwt(jwt).build();
     }
 

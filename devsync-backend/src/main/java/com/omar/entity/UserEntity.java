@@ -17,26 +17,25 @@ public class UserEntity implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long userId;
     private String username;
     private String email;
     private String password;
+    private String imageUri;
+    private String skill;
+    private String level;
     @Enumerated(EnumType.STRING)
     private Role role;
 
     public UserDTO userDTO() {
         UserDTO userDTO = new UserDTO();
-        userDTO.setId(id);
+        userDTO.setUserId(userId);
         userDTO.setUsername(username);
+        userDTO.setEmail(email);
+        userDTO.setImageUri(imageUri);
+        userDTO.setSkill(skill);
+        userDTO.setLevel(level);
         return userDTO;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
     }
 
     public String getUsername() {
@@ -88,25 +87,4 @@ public class UserEntity implements UserDetails {
         this.password = password;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        UserEntity that = (UserEntity) o;
-        return Objects.equals(id, that.id) && Objects.equals(username, that.username) && Objects.equals(password, that.password) && role == that.role;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, username, password, role);
-    }
-
-    @Override
-    public String toString() {
-        return "UserEntity{" +
-                "id=" + id +
-                ", username='" + username + '\'' +
-                ", role=" + role +
-                '}';
-    }
 }
