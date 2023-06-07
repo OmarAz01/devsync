@@ -12,9 +12,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AuthenticationResponse {
-    private Long id;
-    private String username;
-    private String email;
-    private Role role;
+    private Long userId;
     private String jwt;
 }

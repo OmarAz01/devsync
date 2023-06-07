@@ -18,8 +18,11 @@ public class AuthService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     public AuthenticationResponse register(RegisterRequest request) {
+        if (userRepo.findByUsername(request.getUsername()).isPresent()) {
+            return AuthenticationResponse.builder().jwt("Username already exists").build();
+        }
         if (userRepo.findByEmail(request.getEmail()).isPresent()) {
-            return AuthenticationResponse.builder().username("Username already exists").build();
+            return AuthenticationResponse.builder().jwt("Email already exists").build();
         }
         UserEntity user = new UserEntity();
         user.setEmail(request.getEmail());
@@ -29,8 +32,7 @@ public class AuthService {
         userRepo.save(user);
 
         String jwt = jwtService.generateToken(user);
-        return AuthenticationResponse.builder().id(user.getUserId()).username(user.getUsername()).email(user.getEmail())
-                .role(user.getRole()).jwt(jwt).build();
+        return AuthenticationResponse.builder().userId(user.getUserId()).jwt(jwt).build();
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
@@ -38,8 +40,7 @@ public class AuthService {
         UserEntity user = userRepo.findByUsername(request.getEmail()).orElseThrow();
         
         String jwt = jwtService.generateToken(user);
-        return AuthenticationResponse.builder().id(user.getUserId()).username(user.getUsername())
-                .role(user.getRole()).email(user.getEmail()).jwt(jwt).build();
+        return AuthenticationResponse.builder().userId(user.getUserId()).jwt(jwt).build();
     }
 
     public Boolean validate(String authorization) {

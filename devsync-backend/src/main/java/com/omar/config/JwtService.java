@@ -21,7 +21,7 @@ public class JwtService {
     @Value("${signin.key}")
     private String signInKey;
 
-    public String getEmail(String jwt) {
+    public String getUsername(String jwt) {
         return extractClaim(jwt, Claims::getSubject);
     }
 
@@ -41,18 +41,18 @@ public class JwtService {
                 .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis()+1000*60*24))
+                .setExpiration(new Date(System.currentTimeMillis()+1000*60*30))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
     public boolean isTokenValid(String jwt,UserDetails userDetails){
-        String email = getEmail(jwt);
-        return (email.equals(userDetails.getUsername())) && !isTokenExpired(jwt);
+        String username = getUsername(jwt);
+        return (username.equals(userDetails.getUsername())) && !isTokenExpired(jwt);
     }
 
     public boolean isTokenExpired(String jwt){
-        return  extractExp(jwt).before(new Date());
+        return extractExp(jwt).before(new Date());
 
     }
 
