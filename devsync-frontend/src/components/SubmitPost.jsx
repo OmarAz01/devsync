@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import CircumIcon from '@klarr-agency/circum-icons-react';
 
 const SubmitPost = ({ setShow, createAlert }) => {
   const user = JSON.parse(localStorage.getItem('user'));
@@ -8,7 +9,6 @@ const SubmitPost = ({ setShow, createAlert }) => {
     content: '',
     levelNeeded: ['Beginner'],
     skillNeeded: ['Web Dev'],
-    title: '',
     userId: '',
     dateCreated: ''
   });
@@ -22,8 +22,8 @@ const SubmitPost = ({ setShow, createAlert }) => {
       ).toISOString();
       const updatedPost = {
         ...post,
-        levelNeeded: post.levelNeeded.join(' '),
-        skillNeeded: post.skillNeeded.join(' '),
+        levelNeeded: post.levelNeeded.join(', '),
+        skillNeeded: post.skillNeeded.join(', '),
         userId: user.userId,
         dateCreated: currentFormattedDate
       };
@@ -31,7 +31,8 @@ const SubmitPost = ({ setShow, createAlert }) => {
       axios
         .post(`${BASE_URL}/api/posts/create`, updatedPost)
         .then(response => {
-          window.location.reload();
+          setShow(false);
+          createAlert('Post created successfully', 'success');
         })
         .catch(error => {
           console.log(error);
@@ -45,7 +46,7 @@ const SubmitPost = ({ setShow, createAlert }) => {
   return (
     <>
       <div className="flex flex-row justify-between md:mx-8 mx-4 max-w-xl">
-        <h4
+        <button
           onClick={() => {
             setPost({
               ...post,
@@ -54,24 +55,24 @@ const SubmitPost = ({ setShow, createAlert }) => {
             });
             handlePost();
           }}
-          className="hover:text-gray-400 md:text-2xl text-xl w-80 py-8 underline hover:cursor-pointer">
-          Submit Your Post
-        </h4>
-        <h4
+          className="hover:bg-zinc-600 md:text-2xl text-xl h-fit py-1 border-2 border-black px-4 shadow-lg rounded-md my-8 bg-zinc-900 hover:cursor-pointer w-fit">
+          Submit
+        </button>
+        <button
           onClick={() => setShow(false)}
-          className="hover:text-gray-400 md:text-2xl h-auto text-xl py-8 underline pr-4 text-right hover:cursor-pointer">
+          className="hover:bg-zinc-600 md:text-2xl text-xl h-fit py-1 border-2 border-black px-4 shadow-lg rounded-md my-8 bg-zinc-900 hover:cursor-pointer w-fit">
           Cancel
-        </h4>
+        </button>
       </div>
 
       <form // Submit Post Form
         onSubmit={e => e.preventDefault()}
-        className="flex flex-col">
+        className="flex flex-col w-fill">
         <div className="flex flex-col p-4 max-w-xl w-11/12 bg-zinc-800 md:mx-8 mx-4 rounded-md border border-black shadow-md">
           <textarea
             maxLength={250}
             value={post.content}
-            placeholder="Anyone want to collaborate on a project..."
+            placeholder="What type of project do you need help with?"
             onChange={e =>
               setPost({ ...post, content: e.target.value })
             }
@@ -79,10 +80,10 @@ const SubmitPost = ({ setShow, createAlert }) => {
             className="placeholder:italic placeholder:text-sm placeholder:md:text-base flex mb-2 w-full h-40 px-4 py-2 resize-none bg-zinc-700 text-sm md:text-base leading-tight focus:outline-none focus:shadow-outline rounded-lg"
           />
           <div className="flex flex-row mb-4 text-left flex-wrap">
-            <h4 className="md:text-base text-sm w-fit pr-2">
-              Skills Needed:
-            </h4>
-            <div className="flex flex-row flex-wrap">
+            <div className="flex flex-row flex-wrap ">
+              <h4 className="md:text-base text-sm w-fit pr-2 py-1 my-2">
+                Skills Needed:
+              </h4>
               {post.skillNeeded.map(
                 (
                   skill,
@@ -90,7 +91,7 @@ const SubmitPost = ({ setShow, createAlert }) => {
                 ) => (
                   <h4
                     onClick={() => {
-                      // Remove skill from list
+                      // Remove skill from list when clicking on skill
                       if (post.skillNeeded.length !== 1) {
                         setPost(prevPost => ({
                           ...prevPost,
@@ -101,21 +102,19 @@ const SubmitPost = ({ setShow, createAlert }) => {
                       }
                     }}
                     key={index}
-                    className="md:text-base text-sm w-fit hover:text-red-500 hover:font-bold hover:cursor-pointer">
-                    {index === post.skillNeeded.length - 1
-                      ? skill
-                      : skill + ','}
-                    &nbsp;
+                    className="flex items-center flex-row md:text-base text-sm w-fit mr-2 mt-2 h-fit hover:bg-red-500 hover:cursor-pointer rounded-md bg-zinc-900 px-2 py-1">
+                    {skill + ' |'}&nbsp;
+                    <CircumIcon size="24px" name="square_remove" />
                   </h4>
                 )
               )}
             </div>
           </div>
           <div className="flex flex-row mb-4 text-left flex-wrap">
-            <h4 className="md:text-base text-sm w-fit pr-2">
-              Level Needed:
-            </h4>
             <div className="flex flex-row flex-wrap">
+              <h4 className="md:text-base text-sm w-fit pr-2 py-1 my-2">
+                Level Needed:
+              </h4>
               {post.levelNeeded.map(
                 (
                   level,
@@ -124,7 +123,7 @@ const SubmitPost = ({ setShow, createAlert }) => {
                   <h4
                     onClick={() => {
                       if (post.levelNeeded.length !== 1) {
-                        // Remove level from list
+                        // Remove level from list when clicking on the level
                         setPost(prevPost => ({
                           ...prevPost,
                           levelNeeded: prevPost.levelNeeded.filter(
@@ -134,11 +133,9 @@ const SubmitPost = ({ setShow, createAlert }) => {
                       }
                     }}
                     key={index}
-                    className="md:text-base text-sm w-fit hover:text-red-500 hover:font-bold hover:cursor-pointer">
-                    {index === post.levelNeeded.length - 1
-                      ? level
-                      : level + ','}
-                    &nbsp;
+                    className="flex flex-row items-center md:text-base text-sm w-fit mr-2 mt-2 h-fit hover:bg-red-500 hover:cursor-pointer rounded-md bg-zinc-900 px-2 py-1">
+                    {level + ' |'}&nbsp;
+                    <CircumIcon size="24px" name="square_remove" />
                   </h4>
                 )
               )}

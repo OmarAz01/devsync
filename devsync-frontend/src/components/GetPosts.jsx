@@ -8,23 +8,26 @@ const GetPosts = ({ createAlert }) => {
   const [posts, setPosts] = useState([]);
   const [visiblePosts, setVisiblePosts] = useState(5);
   const [users, setUsers] = useState([]);
+  const [editMode, setEditMode] = useState({
+    edit: false,
+    postId: '',
+    content: ''
+  });
   const currUser = JSON.parse(localStorage.getItem('user'));
 
   useEffect(() => {
-    const getPosts = async () => {
-      try {
-        const response = await axios.get(
-          `${BASE_URL}/api/posts/all`
-        );
-        setPosts(response.data);
-        fetchUsersForPosts(response.data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
     getPosts();
   }, []);
+
+  const getPosts = async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/api/posts/all`);
+      setPosts(response.data);
+      fetchUsersForPosts(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   // Fetches all the users of the posts
   const fetchUsersForPosts = async posts => {
@@ -86,8 +89,45 @@ const GetPosts = ({ createAlert }) => {
     }
   };
 
-  // To be implemented
-  const handleEdit = postId => {};
+  const handleEdit = originalPost => {
+    if (editMode.edit) {
+      const editedPost = {
+        ...originalPost,
+        content: editMode.content
+      };
+      if (editedPost.content === originalPost.content) {
+        setEditMode({ ...editMode, edit: false });
+        return;
+      }
+      axios
+        .put(
+          BASE_URL + '/api/posts/update/' + originalPost.postId,
+          editedPost
+        )
+        // Sets the post content in posts state to the edited posts
+        .then(() => {
+          setEditMode({ ...editMode, edit: false });
+          setPosts(prevPosts => {
+            const updatedPosts = [...prevPosts];
+            const postIndex = updatedPosts.findIndex(
+              post => post.postId === originalPost.postId
+            );
+            if (postIndex !== -1) {
+              updatedPosts[postIndex].content = editedPost.content;
+            }
+            return updatedPosts;
+          });
+          createAlert('Post updated', 'success');
+        })
+        .catch(err => console.log(err));
+    } else {
+      setEditMode({
+        edit: true,
+        content: originalPost.content,
+        postId: originalPost.postId
+      });
+    }
+  };
 
   return (
     <>
@@ -109,7 +149,7 @@ const GetPosts = ({ createAlert }) => {
             key={post.postId}
             className="pt-4 pb-6 border rounded-lg shadow-md border-black my-4 min-w-full 
           max-w-screen-md bg-zinc-800 flex flex-row">
-            <div className="flex flex-col text-center justify-center items-center min-w-fit">
+            <div className="flex flex-col text-center -center items-center min-w-fit md:w-40">
               <Image // User Information
                 src={pp1Image}
                 alt="image"
@@ -129,27 +169,60 @@ const GetPosts = ({ createAlert }) => {
                     onClick={() => {
                       handleDelete(post.postId);
                     }}
-                    className="bg-red-600 mt-2 
-              px-2 hover:bg-red-500 rounded-md w-18 md:text-base text-xs">
+                    className="bg-zinc-900 mt-2 py-1
+              px-2 hover:bg-red-500 rounded-md w-18 border-black border shadow-sm md:text-base text-xs">
                     Delete
                   </button>
                   <button
-                    onClick={() => handleEdit(post.postId)}
-                    className="bg-blue-600 mt-2 
-              px-4 hover:bg-blue-500 rounded-md md:text-base text-xs">
+                    onClick={() => handleEdit(post)}
+                    className="bg-zinc-900 mt-2  py-1
+              px-4 hover:bg-blue-500 rounded-md border-black border shadow-sm md:text-base text-xs">
                     Edit
                   </button>
                 </>
-              ) : null}
+              ) : (
+                <button
+                  onClick={() => {
+                    handleDelete(post.postId);
+                  }}
+                  className="bg-zinc-900 mt-2 py-1
+              px-4 hover:bg-zinc-600 rounded-md w-18 border-black border shadow-sm md:text-base text-xs">
+                  Sync
+                </button>
+              )}
             </div>
-            <div className="flex flex-col w-11/12 max-w-screen-sm relative rounded-lg mr-2 bg-zinc-700">
-              <p className="text-sm md:text-base px-4 py-2 break-all mb-8">
-                {post.content}
-              </p>
-              <div className="flex flex-row justify-between">
-                <h3 className="text-sm md:text-base pt-6 px-4 absolute bottom-2">
+            {/* Displays textarea when edit button is clicked and postIds match (postId is passed on edit button click), */}
+            <div className="flex flex-col justify-between w-full max-w-full relative rounded-lg mr-4 bg-zinc-700">
+              {editMode.edit && editMode.postId === post.postId ? (
+                <textarea
+                  maxLength={250}
+                  defaultValue={post.content}
+                  value={editMode.content}
+                  onChange={e =>
+                    setEditMode({
+                      ...editMode,
+                      content: e.target.value
+                    })
+                  }
+                  required
+                  autoFocus
+                  onFocus={e => e.target.select()}
+                  className="flex flex-col h-44 max-w-full relative rounded-lg bg-zinc-700 resize-none px-4 py-2 outline-none text-sm md:text-base"
+                />
+              ) : (
+                <p className="text-sm md:text-base px-4 py-2 break-all mb-8">
+                  {post.content}
+                </p>
+              )}
+              <div className="flex flex-col py-4 ">
+                <h3 className="text-sm md:text-base px-4">
                   {' '}
-                  Skills Needed: {postUser ? post.skillNeeded : null}
+                  {postUser ? post.skillNeeded : null}
+                </h3>
+
+                <h3 className="text-sm md:text-base pt-2 px-4">
+                  {' '}
+                  {postUser ? post.levelNeeded : null}
                 </h3>
               </div>
               <div className="flex absolute -bottom-5 right-0">
@@ -171,7 +244,7 @@ const GetPosts = ({ createAlert }) => {
         </button>
       ) : (
         <h4 className="text-sm md:text-base text-center py-4">
-          No more posts to show
+          Nothing more to show
         </h4>
       )}
     </>

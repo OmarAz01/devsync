@@ -20,12 +20,12 @@ const Feed = () => {
   return (
     <>
       <div className="flex flex-col justify-center items-center">
-        <div className="flex flex-col w-full text-center justify-center max-w-screen-xl">
+        <div className="flex flex-col text-center justify-center w-full max-w-screen-xl">
           <div className="flex flex-col max-w-screen-lg py-8 text-left">
             <div
               className={`${
                 show
-                  ? 'absolute w-full max-w-full transition-all opacity-100 translate-y-0 duration-500 delay-200 ease-in-out'
+                  ? 'absolute w-full max-w-screen-md transition-all opacity-100 translate-y-0 duration-500 delay-200 ease-in-out'
                   : '-translate-y-96 pointer-events-none opacity-0 transition-all duration-500 ease-in-out h-0 delay-200 overflow-visible'
               }`}>
               <SubmitPost
@@ -33,23 +33,29 @@ const Feed = () => {
                 createAlert={createAlert}
               />
             </div>
-            <h4
+            <button
               onClick={() => setShow(!show)}
               className={`${
                 show
                   ? 'opacity-0 pointer-events-none transition-opacity'
                   : 'transition-opacity opacity-100 duration-300 delay-500'
-              } hover:text-gray-400 md:text-3xl text-2xl py-8 md:px-8 px-4 underline hover:cursor-pointer w-56`}>
-              Start a post
-            </h4>
+              } hover:bg-zinc-600 md:text-2xl text-xl py-1 h-fit border-2 border-black px-4 shadow-lg rounded-md md:mx-8 my-8 bg-zinc-900 mx-4 hover:cursor-pointer w-fit`}>
+              New Post
+            </button>
           </div>
           <div
             className={`${
               show
-                ? 'transition-all duration-500 ease-in-out md:translate-y-1/2 translate-y-96'
-                : 'translate-y-0 transition-all duration-500 ease-in-out'
-            } transition-transform translate-y-0 duration-1000 ease-in-out flex flex-col max-w-screen-md pb-8 text-left items-center mx-4 md:mx-8`}>
-            <h4 className="text-3xl md:pl-8 pl-4 py-8 ">Posts</h4>
+                ? 'transition-all duration-500 ease-in-out md:translate-y-[25%] translate-y-[35%] delay-200'
+                : 'translate-y-0 transition-all duration-500 ease-in-out delay-200'
+            } flex flex-col max-w-screen-md pb-8 text-left items-center mx-4 md:mx-8`}>
+            <div className="flex flex-row content-left items-center justify-between w-full text-left">
+              <h4 className="text-2xl md:text-3xl py-8">
+                Browse Posts
+              </h4>
+              <h4 className="py-8 ">Filter by</h4>
+            </div>
+
             <GetPosts createAlert={createAlert} />
           </div>
         </div>
