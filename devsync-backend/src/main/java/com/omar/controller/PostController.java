@@ -1,6 +1,7 @@
 package com.omar.controller;
 
 import com.omar.entity.PostEntity;
+import com.omar.entity.QueryDTO;
 import com.omar.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -20,20 +21,6 @@ public class PostController {
        return postService.findAllPosts();
     }
 
-    @GetMapping("/skill/{skill}")
-    public Optional<List<PostEntity>> getPostsBySkillNeeded(@PathVariable("skill") String skill ) {
-        return postService.findBySkill(skill);
-    }
-
-    @GetMapping("/level/{level}")
-    public Optional<List<PostEntity>> getPostsByLevelNeeded(@PathVariable("level") String level ) {
-        return postService.findByLevel(level);
-    }
-
-    @GetMapping("/skill/{skill}/level/{level}")
-    public Optional<List<PostEntity>> getPostsBySkillAndLevelNeeded(@PathVariable("skill") String skill, @PathVariable("level") String level ) {
-        return postService.findBySkillAndLevel(skill, level);
-    }
 
     @GetMapping("/user/{userId}")
     public Optional<PostEntity> getPostByUserId(@PathVariable("userId") Long userId) {
@@ -58,6 +45,11 @@ public class PostController {
     @DeleteMapping("/delete/{id}")
     public void deletePost(@PathVariable("id") Long id) {
         postService.deletePost(id);
+    }
+
+    @PostMapping("/query")
+    public Optional<List<PostEntity>> getPostsByQuery(@RequestBody QueryDTO query) {
+        return postService.findBySkillAndLevel(query);
     }
 
 

@@ -1,6 +1,7 @@
 package com.omar.service;
 
 import com.omar.entity.PostEntity;
+import com.omar.entity.QueryDTO;
 
 import javax.swing.text.html.Option;
 import java.util.List;
@@ -18,7 +19,7 @@ public interface PostService {
 
     Optional<PostEntity> findByUserId(Long userId);
     Optional<List<PostEntity>> findAllPosts();
-    Optional<List<PostEntity>> findBySkill(String skillNeeded);
-    Optional<List<PostEntity>> findByLevel(String levelNeeded);
-    Optional<List<PostEntity>> findBySkillAndLevel(String skillNeeded, String levelNeeded);
+
+    Optional<List<PostEntity>> findBySkillAndLevel(QueryDTO query);
+
 }

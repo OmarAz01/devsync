@@ -12,17 +12,11 @@ import java.util.Optional;
 public interface PostRepo extends JpaRepository<PostEntity, Long> {
 
     Optional<PostEntity> findByUserId(Long userId);
-    @Query(value = "SELECT * FROM posts ORDER BY post_id DESC LIMIT 50", nativeQuery = true)
+    @Query(value = "SELECT * FROM posts ORDER BY post_id DESC LIMIT 30", nativeQuery = true)
     Optional<List<PostEntity>> findAllPosts();
 
-    @Query(value = "SELECT * FROM posts WHERE skill_needed = ?1 ORDER BY post_id DESC LIMIT 50", nativeQuery = true)
-    Optional<List<PostEntity>> findBySkill(String skillNeeded);
-
-    @Query(value = "SELECT * FROM posts WHERE level_needed = ?1 ORDER BY post_id DESC LIMIT 50", nativeQuery = true)
-    Optional<List<PostEntity>> findByLevel(String levelNeeded);
-
-    @Query(value = "SELECT * FROM posts WHERE skill_needed = ?1 AND level_needed = ?2 ORDER BY post_id DESC LIMIT 50", nativeQuery = true)
-    Optional<List<PostEntity>> findBySkillAndLevel(String skillNeeded, String levelNeeded);
+    @Query(value = "SELECT * FROM posts WHERE skill_needed LIKE %:skillQuery% AND level_needed LIKE %:levelQuery% ORDER BY post_id DESC LIMIT 30", nativeQuery = true)
+    Optional<List<PostEntity>> findBySkillAndLevel(String skillQuery, String levelQuery);
 
 
 }

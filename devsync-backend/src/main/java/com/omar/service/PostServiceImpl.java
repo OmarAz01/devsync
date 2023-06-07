@@ -1,6 +1,7 @@
 package com.omar.service;
 
 import com.omar.entity.PostEntity;
+import com.omar.entity.QueryDTO;
 import com.omar.repo.PostRepo;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -55,21 +56,10 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
-    public Optional<List<PostEntity>> findBySkill(String skillNeeded) {
-        Optional<List<PostEntity>> posts = postRepo.findBySkill(skillNeeded);
+    public Optional<List<PostEntity>> findBySkillAndLevel(QueryDTO query) {
+        Optional<List<PostEntity>> posts = postRepo.findBySkillAndLevel(query.getSkillQuery(), query.getLevelQuery());
         return posts;
     }
 
-    @Override
-    public Optional<List<PostEntity>> findByLevel(String levelNeeded) {
-        Optional<List<PostEntity>> posts = postRepo.findByLevel(levelNeeded);
-        return posts;
-    }
-
-    @Override
-    public Optional<List<PostEntity>> findBySkillAndLevel(String skillNeeded, String levelNeeded) {
-        Optional<List<PostEntity>> posts = postRepo.findBySkillAndLevel(skillNeeded, levelNeeded);
-        return posts;
-    }
 
 }

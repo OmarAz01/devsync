@@ -15,6 +15,7 @@ public class PostEntity {
     private Long postId;
 
     private String title;
+    @Column(length = 300)
     private String content;
     private Long userId;
     private String skillNeeded;
