@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Image from 'react-bootstrap/Image';
 import pp1Image from '../assets/pp1.jpg';
+import FilterBy from './FilterBy';
 
 const GetPosts = ({ createAlert }) => {
   const BASE_URL = 'http://localhost:8080';
@@ -19,17 +20,22 @@ const GetPosts = ({ createAlert }) => {
     getPosts();
   }, []);
 
+  const updatePostsWithFilter = filteredPosts => {
+    setPosts(filteredPosts);
+  };
+
   const getPosts = async () => {
     try {
       const response = await axios.get(`${BASE_URL}/api/posts/all`);
       setPosts(response.data);
+      console.log(response.data);
       fetchUsersForPosts(response.data);
     } catch (error) {
       console.log(error);
     }
   };
 
-  // Fetches all the users of the posts
+  // Fetches all the users of the posts to display the username and profile picture
   const fetchUsersForPosts = async posts => {
     const userIds = posts.map(post => post.userId);
 
@@ -44,7 +50,7 @@ const GetPosts = ({ createAlert }) => {
     }
   };
 
-  // Fetches the one user for the post
+  // Fetches the one user for the post to check if the user is the owner of the post
   const fetchUserForPost = id => {
     const user = users.find(user => user.userId === id);
 
@@ -90,23 +96,24 @@ const GetPosts = ({ createAlert }) => {
   };
 
   const handleEdit = originalPost => {
-    if (editMode.edit) {
+    if (
+      editMode.edit &&
+      editMode.postId === originalPost.postId &&
+      editMode.content !== originalPost.content &&
+      editMode.content.length > 10
+    ) {
       const editedPost = {
         ...originalPost,
         content: editMode.content
       };
-      if (editedPost.content === originalPost.content) {
-        setEditMode({ ...editMode, edit: false });
-        return;
-      }
       axios
         .put(
           BASE_URL + '/api/posts/update/' + originalPost.postId,
           editedPost
         )
-        // Sets the post content in posts state to the edited posts
         .then(() => {
           setEditMode({ ...editMode, edit: false });
+          // Update the post in the posts array
           setPosts(prevPosts => {
             const updatedPosts = [...prevPosts];
             const postIndex = updatedPosts.findIndex(
@@ -120,6 +127,14 @@ const GetPosts = ({ createAlert }) => {
           createAlert('Post updated', 'success');
         })
         .catch(err => console.log(err));
+    } else if (editMode.edit && editMode.content.length < 10) {
+      createAlert('Post must be at least 10 characters', 'error');
+    } else if (editMode.edit) {
+      setEditMode({
+        edit: false,
+        content: originalPost.content,
+        postId: originalPost.postId
+      });
     } else {
       setEditMode({
         edit: true,
@@ -131,6 +146,7 @@ const GetPosts = ({ createAlert }) => {
 
   return (
     <>
+      <FilterBy updatePostsWithFilter={updatePostsWithFilter} />
       {posts.slice(0, visiblePosts).map(post => {
         const postUser = fetchUserForPost(post.userId);
         const submittedDate = new Date(post.dateCreated);
@@ -150,7 +166,7 @@ const GetPosts = ({ createAlert }) => {
             className="pt-4 pb-6 border rounded-lg shadow-md border-black my-4 min-w-full 
           max-w-screen-md bg-zinc-800 flex flex-row">
             <div className="flex flex-col text-center -center items-center min-w-fit md:w-40">
-              <Image // User Information
+              <Image
                 src={pp1Image}
                 alt="image"
                 className="md:w-20 md:h-20 w-12 h-12 mx-4 mb-2 rounded-full"
@@ -163,7 +179,7 @@ const GetPosts = ({ createAlert }) => {
                 {' '}
                 {postUser ? postUser.level : null}{' '}
               </h4>
-              {post.userId === currUser.userId ? (
+              {currUser && post.userId === currUser.userId ? (
                 <>
                   <button
                     onClick={() => {
@@ -191,12 +207,12 @@ const GetPosts = ({ createAlert }) => {
                 </button>
               )}
             </div>
-            {/* Displays textarea when edit button is clicked and postIds match (postId is passed on edit button click), */}
+            {/* Displays textarea when edit button is clicked and postIds match */}
             <div className="flex flex-col justify-between w-full max-w-full relative rounded-lg mr-4 bg-zinc-700">
               {editMode.edit && editMode.postId === post.postId ? (
                 <textarea
                   maxLength={250}
-                  defaultValue={post.content}
+                  minLength={10}
                   value={editMode.content}
                   onChange={e =>
                     setEditMode({
@@ -207,22 +223,22 @@ const GetPosts = ({ createAlert }) => {
                   required
                   autoFocus
                   onFocus={e => e.target.select()}
-                  className="flex flex-col h-44 max-w-full relative rounded-lg bg-zinc-700 resize-none px-4 py-2 outline-none text-sm md:text-base"
+                  className="flex flex-col md:h-40 h-36 max-w-full relative rounded-lg bg-zinc-700 resize-none px-4 pb-2 pt-4 outline-none text-sm md:text-base"
                 />
               ) : (
-                <p className="text-sm md:text-base px-4 py-2 break-all mb-8">
+                <p className="text-sm md:text-base px-4 pt-4 pb-2 break-all mb-8">
                   {post.content}
                 </p>
               )}
               <div className="flex flex-col py-4 ">
                 <h3 className="text-sm md:text-base px-4">
                   {' '}
-                  {postUser ? post.skillNeeded : null}
+                  {post.skillNeeded}
                 </h3>
 
                 <h3 className="text-sm md:text-base pt-2 px-4">
                   {' '}
-                  {postUser ? post.levelNeeded : null}
+                  {post.levelNeeded}
                 </h3>
               </div>
               <div className="flex absolute -bottom-5 right-0">
