@@ -4,62 +4,116 @@ import com.omar.entity.PostEntity;
 import com.omar.entity.QueryDTO;
 import com.omar.repo.PostRepo;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
+import java.net.URLDecoder;
 
 @Service
 @AllArgsConstructor
-public class PostServiceImpl implements PostService{
+public class PostServiceImpl implements PostService {
 
     private final PostRepo postRepo;
 
-
     @Override
-    public void deletePost(Long id) {
-        PostEntity post = postRepo.findById(id).orElseThrow();
-        postRepo.deleteById(id);
+    public ResponseEntity<Long> deletePost(Long id) {
+        Optional<PostEntity> post = postRepo.findById(id);
+        if (post.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+        try {
+            postRepo.deleteById(id);
+            return ResponseEntity.status(HttpStatus.OK).body(id);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+
+
     }
 
     @Override
-    public PostEntity updatePost(Long id, PostEntity post) {
-        PostEntity existingPost = postRepo.findById(id).orElseThrow();
-        existingPost.setContent(post.getContent());
-        existingPost.setSkillNeeded(post.getSkillNeeded());
-        existingPost.setLevelNeeded(post.getLevelNeeded());
-        existingPost.setDateCreated(post.getDateCreated());
-        return postRepo.save(existingPost);
+    public ResponseEntity<PostEntity> updatePost(Long id, PostEntity post) {
+        Optional<PostEntity> existingPost = postRepo.findById(id);
+        if (existingPost.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+        existingPost.get().setContent(post.getContent());
+        existingPost.get().setSkillNeeded(post.getSkillNeeded());
+        existingPost.get().setLevelNeeded(post.getLevelNeeded());
+        existingPost.get().setDateCreated(post.getDateCreated());
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(postRepo.save(existingPost.get()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+
     }
 
     @Override
-    public Optional<PostEntity> findPost(Long id) {
-        return postRepo.findById(id);
+    public ResponseEntity<PostEntity> findPost(Long id) {
+        Optional<PostEntity> post = postRepo.findById(id);
+        if (post.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(post.get());
     }
 
     @Override
-    public PostEntity createPost(PostEntity post) {
-        return postRepo.save(post);
+    public ResponseEntity<PostEntity> createPost(PostEntity post) {
+        try {
+            PostEntity newPost = postRepo.save(post);
+            return ResponseEntity.status(HttpStatus.CREATED).body(newPost);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
 
     @Override
-    public Optional<PostEntity> findByUserId(Long userId) {
-        Optional<PostEntity> post = postRepo.findByUserId(userId);
-        return post;
+    public ResponseEntity<PostEntity> findByUserId(Long userId) {
+        return postRepo.findByUserUserId(userId).isEmpty() ? ResponseEntity.status(HttpStatus.NOT_FOUND).body(null) :
+                ResponseEntity.status(HttpStatus.OK).body(postRepo.findByUserUserId(userId).get());
     }
 
     @Override
-    public Optional<List<PostEntity>> findAllPosts() {
-        Optional<List<PostEntity>> posts = postRepo.findAllPosts();
-        return posts;
+    public ResponseEntity<List<PostEntity>> findAllPostsBefore(String date) {
+        String decodedDateTime;
+        try {
+            decodedDateTime = URLDecoder.decode(date, StandardCharsets.UTF_8.toString());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+        try {
+            Optional<List<PostEntity>> posts = postRepo.findAllPostsBefore(decodedDateTime.substring(0, 19));
+            if (posts.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            }
+            return ResponseEntity.status(HttpStatus.OK).body(posts.get());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
+
 
     @Override
-    public Optional<List<PostEntity>> findBySkillAndLevel(QueryDTO query) {
-        Optional<List<PostEntity>> posts = postRepo.findBySkillAndLevel(query.getSkillQuery(), query.getLevelQuery());
-        return posts;
+    public ResponseEntity<List<PostEntity>> findBySkillAndLevel(QueryDTO query) {
+        String decodedDateTime;
+        try {
+            decodedDateTime = URLDecoder.decode(query.getDate(), StandardCharsets.UTF_8.toString());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+        try {
+            Optional<List<PostEntity>> posts = postRepo.findBySkillAndLevel(query.getSkillQuery(), query.getLevelQuery(), decodedDateTime.substring(0, 19));
+            if (posts.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            }
+            return ResponseEntity.status(HttpStatus.OK).body(posts.get());
+        } catch (Exception e) {
+            throw new RuntimeException("Error occurred while retrieving posts by skill and level", e);
+        }
     }
-
-
 }

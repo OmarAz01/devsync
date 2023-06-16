@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserDTO {
     private Long userId;
     private String email;
@@ -14,19 +16,31 @@ public class UserDTO {
     private String skill;
     private String level;
 
+    public static UserDTO convertToDTO(UserEntity user) {
+        return new UserDTO(
+                user.getUserId(),
+                user.getEmail(),
+                user.getUsername(),
+                user.getImageUri(),
+                user.getSkill(),
+                user.getLevel()
+        );
+    }
+
     public static List<UserDTO> convertToDTO(List<UserEntity> users) {
         List<UserDTO> userDTOs = new ArrayList<>();
         for (UserEntity user : users) {
-            UserDTO userDTO = new UserDTO();
-            userDTO.setUserId(user.getUserId());
-            userDTO.setEmail(user.getEmail());
-            userDTO.setUsername(user.getUsername());
-            userDTO.setImageUri(user.getImageUri());
-            userDTO.setSkill(user.getSkill());
-            userDTO.setLevel(user.getLevel());
+            UserDTO userDTO = new UserDTO(
+                    user.getUserId(),
+                    user.getEmail(),
+                    user.getUsername(),
+                    user.getImageUri(),
+                    user.getSkill(),
+                    user.getLevel()
+            );
             userDTOs.add(userDTO);
         }
         return userDTOs;
     }
-
 }
+

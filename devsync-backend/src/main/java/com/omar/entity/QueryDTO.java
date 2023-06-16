@@ -7,4 +7,5 @@ import lombok.Data;
 public class QueryDTO {
     private String skillQuery;
     private String levelQuery;
+    private String date;
 }

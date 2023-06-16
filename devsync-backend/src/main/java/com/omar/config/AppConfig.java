@@ -5,6 +5,8 @@ import com.omar.repo.UserRepo;
 import com.omar.service.UserService;
 import com.omar.service.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,8 +27,18 @@ public class AppConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return username -> userRepo.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        return identifier -> {
+            if (identifier.contains("@")) {
+                // If the identifier contains '@', assume it is an email
+                return (UserDetails) userRepo.findByEmail(identifier)
+                        .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+            } else {
+                // Otherwise, assume it is a user ID
+                Long userId = Long.parseLong(identifier);
+                return (UserDetails) userRepo.findByUserId(userId)
+                        .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+            }
+        };
     }
 
     @Bean
@@ -46,5 +58,5 @@ public class AppConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
+    
 }

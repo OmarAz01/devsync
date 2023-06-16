@@ -26,6 +26,10 @@ public class UserEntity implements UserDetails {
     private String level;
     @Enumerated(EnumType.STRING)
     private Role role;
+    @OneToOne(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private RefreshTokenEntity refreshToken;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<PostEntity> posts;
 
     public UserDTO userDTO() {
         UserDTO userDTO = new UserDTO();
@@ -36,18 +40,6 @@ public class UserEntity implements UserDetails {
         userDTO.setSkill(skill);
         userDTO.setLevel(level);
         return userDTO;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public Role getRole() {
-        return role;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
     }
 
     @Override
@@ -70,21 +62,10 @@ public class UserEntity implements UserDetails {
         return true;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
 }

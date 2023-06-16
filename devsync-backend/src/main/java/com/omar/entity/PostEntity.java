@@ -2,6 +2,8 @@ package com.omar.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.Date;
 
@@ -15,10 +17,17 @@ public class PostEntity {
     private Long postId;
 
     private String title;
+
     @Column(length = 300)
     private String content;
-    private Long userId;
+
+    @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "user_id")
+    private UserEntity user;
+
     private String skillNeeded;
     private String levelNeeded;
     private String dateCreated;
 }
+

@@ -5,10 +5,12 @@ import com.omar.entity.UserEntity;
 import com.omar.entity.UserIdsDTO;
 import com.omar.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/user")
@@ -17,23 +19,22 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/{id}")
-    public UserDTO getUser(@PathVariable("id") Integer id) {
+    public ResponseEntity<UserDTO> getUser(@PathVariable("id") Long id) {
         return userService.findUser(id);
     }
 
-    @DeleteMapping("/delete/{id}")
-    public void deleteUser(@PathVariable("id") Integer id) {
-        userService.deleteUser(id);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Long> deleteUser(@PathVariable("id") Long id) {
+        return userService.deleteUser(id);
     }
 
     @PutMapping("/update/{id}")
-    public UserEntity updateUser(@PathVariable("id") Integer id, @RequestBody UserEntity user) {
+    public ResponseEntity<UserDTO> updateUser(@PathVariable("id") Long id, @RequestBody UserEntity user) {
         return userService.updateUser(id, user);
     }
-    @PostMapping("/userforpost")
-    public List<UserDTO> getUsersWithIds(@RequestBody UserIdsDTO userIds) {
-        List<Integer> ids = userIds.getUserIds();
-        return userService.findUsersWithIds(ids);
-    }
 
+    @PostMapping("/userforpost")
+    public ResponseEntity<List<UserDTO>> getUsersWithIds(@RequestBody UserIdsDTO userIds) {
+        return userService.findUsersWithIds(userIds.getUserIds());
+    }
 }

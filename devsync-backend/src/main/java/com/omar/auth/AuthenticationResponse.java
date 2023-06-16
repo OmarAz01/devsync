@@ -14,4 +14,5 @@ import lombok.NoArgsConstructor;
 public class AuthenticationResponse {
     private Long userId;
     private String jwt;
+    private String error;
 }

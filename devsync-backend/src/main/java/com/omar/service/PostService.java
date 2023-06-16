@@ -2,6 +2,7 @@ package com.omar.service;
 
 import com.omar.entity.PostEntity;
 import com.omar.entity.QueryDTO;
+import org.springframework.http.ResponseEntity;
 
 import javax.swing.text.html.Option;
 import java.util.List;
@@ -9,17 +10,18 @@ import java.util.Optional;
 
 public interface PostService {
 
-    void deletePost(Long postId);
+    ResponseEntity<Long> deletePost(Long postId);
 
-    PostEntity updatePost(Long postId, PostEntity post);
+    ResponseEntity<PostEntity> updatePost(Long postId, PostEntity post);
 
-    Optional<PostEntity> findPost(Long postId);
+    ResponseEntity<PostEntity> findPost(Long postId);
 
-    PostEntity createPost(PostEntity post);
+    ResponseEntity<PostEntity> createPost(PostEntity post);
 
-    Optional<PostEntity> findByUserId(Long userId);
-    Optional<List<PostEntity>> findAllPosts();
+    ResponseEntity<PostEntity> findByUserId(Long userId);
 
-    Optional<List<PostEntity>> findBySkillAndLevel(QueryDTO query);
+    ResponseEntity<List<PostEntity>> findAllPostsBefore(String date);
+
+    ResponseEntity<List<PostEntity>> findBySkillAndLevel(QueryDTO query);
 
 }

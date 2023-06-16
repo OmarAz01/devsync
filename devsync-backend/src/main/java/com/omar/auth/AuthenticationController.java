@@ -1,10 +1,12 @@
 package com.omar.auth;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -16,18 +18,20 @@ public class AuthenticationController {
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(
             @RequestBody RegisterRequest request) {
-        return ResponseEntity.ok(authService.register(request));
+        return authService.register(request);
     }
 
     @PostMapping("/authenticate")
     public ResponseEntity<AuthenticationResponse> authenticate(
             @RequestBody AuthenticationRequest request) {
-        return ResponseEntity.ok(authService.authenticate(request));
+        return authService.authenticate(request);
     }
 
-    @GetMapping("/validate")
-    public ResponseEntity<Boolean> validate(HttpServletRequest request) {
-        return ResponseEntity.ok(authService.validate(request.getHeader("Authorization")));
+    @PostMapping("/validate")
+    public void validate(
+            HttpServletRequest request,
+            HttpServletResponse response) throws IOException {
+        authService.validateToken(request, response);
     }
 
 
