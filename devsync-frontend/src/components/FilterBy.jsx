@@ -1,59 +1,17 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 
-const FilterBy = ({ updatePostsWithFilter }) => {
-  const [filterBy, setFilterBy] = useState({
-    skillQuery: '',
-    levelQuery: ''
-  });
-  const [secondRender, setSecondRender] = useState(false);
-  const BASE_URL = 'http://localhost:8080';
-
-  const handleFilterChange = async () => {
-    try {
-      const response = await axios.post(
-        `${BASE_URL}/api/posts/query`,
-        filterBy
-      );
-      if (response.status === 200) {
-        updatePostsWithFilter(response.data);
-        console.log(response.data);
-        console.log(filterBy);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  useEffect(() => {
-    // This is to prevent the filter from running on the first render
-    if (!secondRender) {
-      setSecondRender(true);
-    }
-    if (
-      filterBy.skillQuery === '' &&
-      filterBy.levelQuery === '' &&
-      !secondRender
-    ) {
-      return;
-    } else {
-      handleFilterChange();
-    }
-  }, [filterBy]);
-
+const FilterBy = ({ filterBy, updateFilterBy }) => {
   return (
-    <div className="flex flex-row justify-end border items-center shadow-sm border-zinc-700 rounded-sm py-4 w-full">
-      <h4 className="text-sm absolute left-2">Filter</h4>
+    <div className="flex flex-row justify-end border items-center shadow-sm border-zinc-700 rounded-sm mb-4 py-2 md:py-4 w-full">
+      <h4 className="md:text-sm text-xs absolute left-2">Filter</h4>
       <select
-        className="bg-inherit text-sm py-1 mx-2 leading-tight focus: hover:cursor-pointer rounded ease"
+        className="bg-inherit md:text-sm text-xs py-1 mx-2 leading-tight focus: hover:cursor-pointer rounded ease"
         id="filter"
         value={filterBy.skillQuery}
-        onChange={e => {
-          setFilterBy({
-            ...filterBy,
-            skillQuery: e.target.value
-          });
-        }}>
+        onChange={e =>
+          updateFilterBy({ ...filterBy, skillQuery: e.target.value })
+        }>
         <option className="bg-zinc-900 " value="">
           None
         </option>
@@ -77,15 +35,12 @@ const FilterBy = ({ updatePostsWithFilter }) => {
         </option>
       </select>
       <select
-        className="bg-inherit text-sm mx-2 leading-tight focus: hover:cursor-pointer rounded ease"
+        className="bg-inherit md:text-sm text-xs mx-2 leading-tight focus: hover:cursor-pointer rounded ease"
         id="filter"
         value={filterBy.levelQuery}
-        onChange={e => {
-          setFilterBy({
-            ...filterBy,
-            levelQuery: e.target.value
-          });
-        }}>
+        onChange={e =>
+          updateFilterBy({ ...filterBy, levelQuery: e.target.value })
+        }>
         <option className="bg-zinc-900 " value="">
           None
         </option>

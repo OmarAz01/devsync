@@ -7,31 +7,78 @@ import FilterBy from './FilterBy';
 const GetPosts = ({ createAlert }) => {
   const BASE_URL = 'http://localhost:8080';
   const [posts, setPosts] = useState([]);
-  const [visiblePosts, setVisiblePosts] = useState(5);
+  const [lastPost, setLastPost] = useState(false);
+  const [lastPostDate, setLastPostDate] = useState(
+    new Date().toISOString().slice(0, 19).replace('T', ' ')
+  );
   const [users, setUsers] = useState([]);
   const [editMode, setEditMode] = useState({
     edit: false,
     postId: '',
     content: ''
   });
+  const [filterBy, setFilterBy] = useState({
+    skillQuery: '',
+    levelQuery: '',
+    date: ''
+  });
   const currUser = JSON.parse(localStorage.getItem('user'));
 
   useEffect(() => {
     getPosts();
-  }, []);
+  }, [filterBy]);
 
-  const updatePostsWithFilter = filteredPosts => {
-    setPosts(filteredPosts);
+  const updateFilterBy = filter => {
+    setFilterBy(filter);
+    console.log(filterBy);
   };
 
   const getPosts = async () => {
-    try {
-      const response = await axios.get(`${BASE_URL}/api/posts/all`);
-      setPosts(response.data);
-      console.log(response.data);
-      fetchUsersForPosts(response.data);
-    } catch (error) {
-      console.log(error);
+    if (filterBy.skillQuery === '' && filterBy.levelQuery === '') {
+      try {
+        const response = await axios.post(
+          `${BASE_URL}/api/posts/all`,
+          new Date().toISOString().slice(0, 19).replace('T', ' ')
+        );
+        if (response.data.length < 10) {
+          setLastPost(true);
+        }
+        if (response.status === 200) {
+          setPosts(response.data);
+          setLastPostDate(
+            response.data[response.data.length - 1].dateCreated
+          );
+          fetchUsersForPosts(response.data);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      try {
+        const response = await axios.post(
+          `${BASE_URL}/api/posts/query`,
+          {
+            ...filterBy,
+            date: new Date()
+              .toISOString()
+              .slice(0, 19)
+              .replace('T', ' ')
+          }
+        );
+        if (response.data.length < 10) {
+          setLastPost(true);
+        }
+        if (response.status === 200) {
+          console.log(response.data);
+          setPosts(response.data);
+          setLastPostDate(
+            response.data[response.data.length - 1].dateCreated
+          );
+          fetchUsersForPosts(response.data);
+        }
+      } catch (error) {
+        console.log(error);
+      }
     }
   };
 
@@ -57,13 +104,15 @@ const GetPosts = ({ createAlert }) => {
     return user;
   };
 
-  const handleMorePosts = () => {
-    setVisiblePosts(prevVisiblePosts => prevVisiblePosts + 10);
-  };
-
   const handleDelete = async postId => {
     try {
       await axios.delete(`${BASE_URL}/api/posts/delete/${postId}`);
+      setPosts(
+        posts.filter(post => {
+          return post.postId !== postId;
+        })
+      );
+
       createAlert('Post deleted', 'success');
     } catch (error) {
       createAlert('Error deleting post', 'error');
@@ -144,118 +193,168 @@ const GetPosts = ({ createAlert }) => {
     }
   };
 
+  const handleSync = () => {
+    return;
+  };
+
+  const handleLoadMore = async () => {
+    if (filterBy.skillQuery === '' && filterBy.levelQuery === '') {
+      try {
+        const response = await axios.post(
+          `${BASE_URL}/api/posts/all`,
+          lastPostDate
+        );
+        if (response.data.length < 10) {
+          setLastPost(true);
+        }
+        if (response.status === 200) {
+          setPosts(prevPosts => [...prevPosts, ...response.data]);
+          setLastPostDate(
+            response.data[response.data.length - 1].dateCreated
+          );
+          fetchUsersForPosts(response.data);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      try {
+        const response = await axios.post(
+          `${BASE_URL}/api/posts/query`,
+          {
+            ...filterBy,
+            date: lastPostDate
+          }
+        );
+        if (response.data.length < 10) {
+          setLastPost(true);
+        }
+        if (response.status === 200) {
+          setPosts(prevPosts => [...prevPosts, ...response.data]);
+          setLastPostDate(
+            response.data[response.data.length - 1].dateCreated
+          );
+          fetchUsersForPosts(response.data);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  };
+
   return (
     <>
-      <FilterBy updatePostsWithFilter={updatePostsWithFilter} />
-      {posts.slice(0, visiblePosts).map(post => {
-        const postUser = fetchUserForPost(post.userId);
-        const submittedDate = new Date(post.dateCreated);
-        const currentDate = new Date(
-          new Date().toLocaleString('en-US', {
-            timeZone: 'America/New_York'
-          })
-        );
-        const timeDiff = Math.abs(
-          currentDate.getTime() - submittedDate.getTime()
-        );
-        const minutes = Math.floor(timeDiff / 60000);
+      <FilterBy
+        updateFilterBy={updateFilterBy}
+        filterBy={filterBy}
+      />
 
-        return (
-          <div
-            key={post.postId}
-            className="pt-4 pb-6 border rounded-lg shadow-md border-black my-4 min-w-full 
-          max-w-screen-md bg-zinc-800 flex flex-row">
-            <div className="flex flex-col text-center -center items-center min-w-fit md:w-40">
-              <Image
-                src={pp1Image}
-                alt="image"
-                className="md:w-20 md:h-20 w-12 h-12 mx-4 mb-2 rounded-full"
-              />
-              <h4 className="md:text-base text-xs">
-                {' '}
-                {postUser ? '@' + postUser.username : null}{' '}
-              </h4>
-              <h4 className="md:text-base text-xs">
-                {' '}
-                {postUser ? postUser.level : null}{' '}
-              </h4>
-              {currUser && post.userId === currUser.userId ? (
-                <>
+      {posts.length > 0 &&
+        posts.map(post => {
+          const postUser = fetchUserForPost(post.userId);
+          const submittedDate = new Date(post.dateCreated + 'Z');
+          const currentDate = new Date();
+          const timeDiff = Math.abs(
+            currentDate.getTime() - submittedDate.getTime()
+          );
+          const minutes = Math.floor(timeDiff / 60000);
+
+          return (
+            <div
+              key={post.postId}
+              className="pt-4 pb-6 border rounded-lg shadow-md border-black my-1 md:my-2 min-w-full
+            max-w-screen-md bg-zinc-800 flex flex-row">
+              <div className="flex flex-col text-center -center items-center min-w-fit md:w-40">
+                <Image
+                  src={pp1Image}
+                  alt="image"
+                  className="md:w-20 md:h-20 w-12 h-12 mx-4 mb-2 rounded-full"
+                />
+                <h4 className="md:text-base text-xs">
+                  {' '}
+                  {postUser ? '@' + postUser.username : null}{' '}
+                </h4>
+                <h4 className="md:text-base text-xs">
+                  {' '}
+                  {postUser ? postUser.level : null}{' '}
+                </h4>
+                {currUser && post.userId === currUser.userId ? (
+                  <>
+                    <button
+                      onClick={() => {
+                        handleDelete(post.postId);
+                      }}
+                      className="bg-zinc-900 mt-2 py-1
+                px-2 hover:bg-red-500 rounded-md w-18 border-black border shadow-sm md:text-base text-xs">
+                      Delete
+                    </button>
+                    <button
+                      onClick={() => handleEdit(post)}
+                      className="bg-zinc-900 mt-2  py-1
+                px-4 hover:bg-blue-500 rounded-md border-black border shadow-sm md:text-base text-xs">
+                      Edit
+                    </button>
+                  </>
+                ) : (
                   <button
                     onClick={() => {
-                      handleDelete(post.postId);
+                      handleSync(post.userId);
                     }}
                     className="bg-zinc-900 mt-2 py-1
-              px-2 hover:bg-red-500 rounded-md w-18 border-black border shadow-sm md:text-base text-xs">
-                    Delete
+                px-4 hover:bg-zinc-600 rounded-md w-18 border-black border shadow-sm md:text-base text-xs">
+                    Sync
                   </button>
-                  <button
-                    onClick={() => handleEdit(post)}
-                    className="bg-zinc-900 mt-2  py-1
-              px-4 hover:bg-blue-500 rounded-md border-black border shadow-sm md:text-base text-xs">
-                    Edit
-                  </button>
-                </>
-              ) : (
-                <button
-                  onClick={() => {
-                    handleDelete(post.postId);
-                  }}
-                  className="bg-zinc-900 mt-2 py-1
-              px-4 hover:bg-zinc-600 rounded-md w-18 border-black border shadow-sm md:text-base text-xs">
-                  Sync
-                </button>
-              )}
-            </div>
-            {/* Displays textarea when edit button is clicked and postIds match */}
-            <div className="flex flex-col justify-between w-full max-w-full relative rounded-lg mr-4 bg-zinc-700">
-              {editMode.edit && editMode.postId === post.postId ? (
-                <textarea
-                  maxLength={250}
-                  minLength={10}
-                  value={editMode.content}
-                  onChange={e =>
-                    setEditMode({
-                      ...editMode,
-                      content: e.target.value
-                    })
-                  }
-                  required
-                  autoFocus
-                  onFocus={e => e.target.select()}
-                  className="flex flex-col md:h-40 h-36 max-w-full relative rounded-lg bg-zinc-700 resize-none px-4 pb-2 pt-4 outline-none text-sm md:text-base"
-                />
-              ) : (
-                <p className="text-sm md:text-base px-4 pt-4 pb-2 break-all mb-8">
-                  {post.content}
-                </p>
-              )}
-              <div className="flex flex-col py-4 ">
-                <h3 className="text-sm md:text-base px-4">
-                  {' '}
-                  {post.skillNeeded}
-                </h3>
-
-                <h3 className="text-sm md:text-base pt-2 px-4">
-                  {' '}
-                  {post.levelNeeded}
-                </h3>
+                )}
               </div>
-              <div className="flex absolute -bottom-5 right-0">
-                <h4 className="text-xs opacity-60 italic">
-                  {' '}
-                  {formateTime(minutes)}{' '}
-                </h4>
+              {/* Displays textarea when edit button is clicked and postIds match */}
+              <div className="flex flex-col justify-between w-full max-w-full relative rounded-lg mr-4 bg-zinc-700">
+                {editMode.edit && editMode.postId === post.postId ? (
+                  <textarea
+                    maxLength={250}
+                    minLength={10}
+                    value={editMode.content}
+                    onChange={e =>
+                      setEditMode({
+                        ...editMode,
+                        content: e.target.value
+                      })
+                    }
+                    required
+                    autoFocus
+                    onFocus={e => e.target.select()}
+                    className="flex flex-col md:h-40 h-36 max-w-full relative rounded-lg bg-zinc-700 resize-none px-4 pb-2 pt-4 outline-none text-xs md:text-base"
+                  />
+                ) : (
+                  <p className="text-xs md:text-base px-4 pt-4 pb-2 break-all mb-8">
+                    {post.content}
+                  </p>
+                )}
+                <div className="flex flex-col py-4 ">
+                  <h3 className="text-xs md:text-base px-4">
+                    {' '}
+                    {post.skillNeeded}
+                  </h3>
+
+                  <h3 className="text-xs md:text-base pt-2 px-4">
+                    {' '}
+                    {post.levelNeeded}
+                  </h3>
+                </div>
+                <div className="flex absolute -bottom-5 right-0">
+                  <h4 className="md:text-xs text-[10px] opacity-60 italic">
+                    {' '}
+                    {formateTime(minutes)}{' '}
+                  </h4>
+                </div>
               </div>
             </div>
-          </div>
-        );
-      })}
+          );
+        })}
 
-      {visiblePosts < posts.length ? (
+      {!lastPost ? (
         <button
           className="hover:text-zinc-500"
-          onClick={handleMorePosts}>
+          onClick={handleLoadMore}>
           Load More...
         </button>
       ) : (

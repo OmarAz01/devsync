@@ -47,24 +47,28 @@ const Feed = () => {
                 show
                   ? 'opacity-0 pointer-events-none transition-opacity'
                   : 'transition-opacity opacity-100 duration-300 delay-500'
-              } hover:bg-zinc-600 md:text-2xl text-lg py-1 h-fit border-2 border-black px-4 shadow-lg rounded-md md:mx-8 my-8 bg-zinc-900 mx-4 hover:cursor-pointer w-fit`}>
+              } hover:bg-zinc-600 md:text-2xl text-lg py-1 h-fit border-2 border-black px-4 shadow-sm rounded-md md:mx-8 my-8 bg-zinc-900 mx-4 hover:cursor-pointer w-fit`}>
               New Post
             </button>
           </div>
           {/* Handles animation and displays posts */}
-          <div
-            className={`${
-              show
-                ? 'transition-all duration-500 ease-in-out md:translate-y-[45%] translate-y-[45%] delay-200'
-                : 'translate-y-0 transition-all duration-500 ease-in-out delay-200'
-            } flex flex-col max-w-screen-md pb-8 text-left items-center mx-4 md:mx-8`}>
-            <div className="flex flex-col content-left w-full text-left py-8">
-              <h4 className="text-2xl md:text-3xl pt-2 pb-8">
-                Browse Posts
-              </h4>
+          <div className="flex flex-row">
+            <div
+              className={`${
+                show
+                  ? 'transition-all duration-500 ease-in-out md:translate-y-[500px] translate-y-[450px] delay-200'
+                  : 'translate-y-0 transition-all duration-500 ease-in-out delay-200'
+              } flex flex-col max-w-screen-md w-full pb-8 text-left items-center mx-4 md:mx-8`}>
+              <div className="flex flex-col content-left w-full text-left py-8">
+                <h4 className="text-2xl md:text-3xl pt-2 pb-2 md:pb-8">
+                  Browse Posts
+                </h4>
+              </div>
+              <GetPosts createAlert={createAlert} />
             </div>
-
-            <GetPosts createAlert={createAlert} />
+            <div className="border-2 w-full max-w-sm hidden lg:flex p-4 mx-4">
+              <h4>Messaging</h4>
+            </div>
           </div>
         </div>
       </div>

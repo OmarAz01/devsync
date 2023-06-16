@@ -28,8 +28,6 @@ const App = () => {
           }
         })
         .catch(error => {
-          localStorage.removeItem('user');
-
           if (error.response.status === 404) {
             setLoggedIn(false);
           } else if (error.response.status === 403) {

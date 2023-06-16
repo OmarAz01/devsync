@@ -20,11 +20,10 @@ const SubmitPost = ({ setShow, createAlert }) => {
         createAlert('Post must be at least 10 characters', 'error');
         return;
       }
-      const currentFormattedDate = new Date(
-        new Date().toLocaleString('en-US', {
-          timeZone: 'America/New_York'
-        })
-      ).toISOString();
+      const currentFormattedDate = new Date()
+        .toISOString()
+        .slice(0, 19)
+        .replace('T', ' ');
       const updatedPost = {
         ...post,
         userId: currUser.userId,
@@ -53,12 +52,12 @@ const SubmitPost = ({ setShow, createAlert }) => {
       <div className="flex flex-row justify-between md:mx-8 mx-4 max-w-xl">
         <button
           onClick={handlePost}
-          className="hover:bg-zinc-600 md:text-2xl text-lg h-fit py-1 border-2 border-black px-4 shadow-lg rounded-md my-8 bg-zinc-900 hover:cursor-pointer w-fit">
+          className="hover:bg-zinc-600 md:text-xl text-base h-fit py-1 border-2 border-black px-4 shadow-lg rounded-md my-8 bg-zinc-900 hover:cursor-pointer w-fit">
           Submit
         </button>
         <button
           onClick={() => setShow(false)}
-          className="hover:bg-zinc-600 md:text-2xl text-lg h-fit py-1 border-2 border-black px-4 shadow-lg rounded-md my-8 bg-zinc-900 hover:cursor-pointer w-fit">
+          className="hover:bg-zinc-600  md:text-xl text-base h-fit py-1 border-2 border-black px-4 shadow-lg rounded-md my-8 bg-zinc-900 hover:cursor-pointer w-fit">
           Cancel
         </button>
       </div>
@@ -76,11 +75,11 @@ const SubmitPost = ({ setShow, createAlert }) => {
               setPost({ ...post, content: e.target.value })
             }
             required
-            className="placeholder:italic placeholder:text-sm placeholder:md:text-base flex mb-2 w-full h-40 px-4 py-4 resize-none bg-zinc-700 text-sm md:text-base leading-tight focus:outline-none focus:shadow-outline rounded-lg"
+            className="placeholder:italic placeholder:text-xs placeholder:md:text-base flex mb-2 w-full h-40 px-4 py-4 resize-none bg-zinc-700 text-xs md:text-base leading-tight focus:outline-none focus:shadow-outline rounded-lg"
           />
           <div className="flex flex-row mb-4 text-left flex-wrap">
             <div className="flex flex-row flex-wrap ">
-              <h4 className="md:text-base text-sm w-fit pr-2 py-1 my-2">
+              <h4 className="md:text-base text-xs w-fit pr-2 py-1 my-2 md:my-1">
                 Skills Needed:
               </h4>
               {/* Displays skills selected and deletes them when clicked */}
@@ -97,16 +96,16 @@ const SubmitPost = ({ setShow, createAlert }) => {
                     }
                   }}
                   key={index}
-                  className="flex items-center flex-row md:text-base text-sm w-fit mr-2 mt-2 h-fit hover:bg-red-500 hover:cursor-pointer rounded-md bg-zinc-900 px-2 py-1">
+                  className="flex items-center flex-row md:text-base text-xs w-fit mr-2 mt-1 h-fit hover:bg-red-500 hover:cursor-pointer rounded-md bg-zinc-900 px-2 py-1">
                   {skill + ' |'}&nbsp;
-                  <CircumIcon size="24px" name="square_remove" />
+                  <CircumIcon size="22px" name="square_remove" />
                 </h4>
               ))}
             </div>
           </div>
           <div className="flex flex-row mb-4 text-left flex-wrap">
             <div className="flex flex-row flex-wrap">
-              <h4 className="md:text-base text-sm w-fit pr-2 py-1 my-2">
+              <h4 className="md:text-base text-xs w-fit pr-2 py-1 my-2 md:my-1">
                 Level Needed:
               </h4>
               {/* Displays levels selected and deletes them when clicked */}
@@ -123,9 +122,9 @@ const SubmitPost = ({ setShow, createAlert }) => {
                     }
                   }}
                   key={index}
-                  className="flex flex-row items-center md:text-base text-sm w-fit mr-2 mt-2 h-fit hover:bg-red-500 hover:cursor-pointer rounded-md bg-zinc-900 px-2 py-1">
+                  className="flex flex-row items-center md:text-base text-xs w-fit mr-2 mt-1 h-fit hover:bg-red-500 hover:cursor-pointer rounded-md bg-zinc-900 px-2 py-1">
                   {level + ' |'}&nbsp;
-                  <CircumIcon size="24px" name="square_remove" />
+                  <CircumIcon size="22px" name="square_remove" />
                 </h4>
               ))}
             </div>
@@ -137,7 +136,7 @@ const SubmitPost = ({ setShow, createAlert }) => {
             {/* Handles select box for skill */}
             <label
               htmlFor="skills-needed"
-              className="md:text-lg py-3 pr-8">
+              className="text-base py-3 pr-8">
               Skills Needed
             </label>
             <select
@@ -163,7 +162,7 @@ const SubmitPost = ({ setShow, createAlert }) => {
                   }));
                 }
               }}
-              className="mb-4 w-34 h-10 p-2 bg-neutral-900 text-m leading-tight focus:outline-none hover:cursor-pointer focus:shadow-outline rounded ease">
+              className="mb-4 w-34 h-10 p-2 bg-neutral-900 md:text-base text-xs leading-tight focus:outline-none hover:cursor-pointer focus:shadow-outline rounded ease">
               <option value="Web Dev">Web Dev</option>
               <option value="Mobile Dev">Mobile Dev</option>
               <option value="Data Science">Data Science</option>
@@ -176,7 +175,7 @@ const SubmitPost = ({ setShow, createAlert }) => {
             {/* Handles select box for level */}
             <label
               htmlFor="level-needed"
-              className="md:text-lg py-3 pl-8">
+              className="text-base py-3 pl-8">
               Level Needed
             </label>
             <select
@@ -202,7 +201,7 @@ const SubmitPost = ({ setShow, createAlert }) => {
                   }));
                 }
               }}
-              className="absolutemx-8 hover:cursor-pointer mb-4 w-32 h-10 p-2 bg-neutral-900 text-m leading-tight focus:outline-none focus:shadow-outline rounded ease">
+              className="absolutemx-8 hover:cursor-pointer mb-4 w-32 h-10 p-2 bg-neutral-900 md:text-base text-xs leading-tight focus:outline-none focus:shadow-outline rounded ease">
               <option value="Beginner">Beginner</option>
               <option value="Intermediate">Intermediate</option>
               <option value="Advanced">Advanced</option>
