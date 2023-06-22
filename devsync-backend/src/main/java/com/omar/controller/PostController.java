@@ -1,15 +1,13 @@
 package com.omar.controller;
 
 import com.omar.entity.PostEntity;
-import com.omar.entity.QueryDTO;
+import com.omar.dto.QueryDTO;
 import com.omar.service.PostService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -24,7 +22,7 @@ public class PostController {
     }
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<PostEntity> getPostByUserId(@PathVariable("userId") Long userId) {
+    public ResponseEntity<List<PostEntity>> getPostsByUserId(@PathVariable("userId") Long userId) {
         return postService.findByUserId(userId);
     }
 

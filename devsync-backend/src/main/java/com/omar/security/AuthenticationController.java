@@ -1,5 +1,9 @@
-package com.omar.auth;
+package com.omar.security;
 
+import com.omar.security.entity.AuthenticationRequest;
+import com.omar.security.entity.AuthenticationResponse;
+import com.omar.security.entity.RegisterRequest;
+import com.omar.security.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +34,7 @@ public class AuthenticationController {
     @PostMapping("/validate")
     public void validate(
             HttpServletRequest request,
-            HttpServletResponse response) throws IOException {
+            HttpServletResponse response) throws Exception {
         authService.validateToken(request, response);
     }
 

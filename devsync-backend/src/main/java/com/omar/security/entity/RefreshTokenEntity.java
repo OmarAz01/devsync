@@ -1,5 +1,6 @@
-package com.omar.entity;
+package com.omar.security.entity;
 
+import com.omar.entity.UserEntity;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.OnDelete;

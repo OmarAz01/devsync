@@ -1,6 +1,6 @@
 package com.omar.repo;
 
-import com.omar.entity.UserDTO;
+import com.omar.dto.UserDTO;
 import com.omar.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;

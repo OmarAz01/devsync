@@ -1,9 +1,10 @@
-package com.omar.service;
+package com.omar.security.service;
 
-import com.omar.entity.RefreshTokenEntity;
+import com.omar.security.entity.RefreshTokenEntity;
 import com.omar.entity.UserEntity;
-import com.omar.repo.RefreshTokenRepo;
+import com.omar.security.repo.RefreshTokenRepo;
 import com.omar.repo.UserRepo;
+import jakarta.persistence.Tuple;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,13 +35,12 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 
     @Override
     public ResponseEntity<Long> logoutUser(Long userId) {
-        // still need to implement
         Optional<UserEntity> user = userRepo.findByUserId(userId);
         if (user.isEmpty()) {
             throw new RuntimeException("User not found");
         }
         refreshTokenRepo.deleteById(userId);
-        return null;
+        return ResponseEntity.status(HttpStatus.OK).body(userId);
     }
 
     @Override
@@ -62,12 +62,16 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     }
 
     @Override
-    public ResponseEntity<RefreshTokenEntity> findByLastAccessTokenAndUserId(String lastAccessToken, Long userId) {
-        Optional<RefreshTokenEntity> refreshToken = refreshTokenRepo.findByLastAccessTokenAndUserId(lastAccessToken, userId);
+    public ResponseEntity<RefreshTokenEntity> findByLastAccessToken(String lastAccessToken) {
+        Optional<Tuple> refreshToken = refreshTokenRepo.findByLastAccessToken(lastAccessToken);
         if (refreshToken.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
-        return ResponseEntity.status(HttpStatus.OK).body(refreshToken.get());
+        RefreshTokenEntity refreshTokenDTO = new RefreshTokenEntity();
+        refreshTokenDTO.setUserId(refreshToken.get().get("user_id", Long.class));
+        refreshTokenDTO.setRefreshToken(refreshToken.get().get("refresh_token", String.class));
+        refreshTokenDTO.setLastAccessToken(refreshToken.get().get("last_access_token", String.class));
+        return ResponseEntity.status(HttpStatus.OK).body(refreshTokenDTO);
     }
 
     @Override

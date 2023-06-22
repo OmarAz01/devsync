@@ -1,15 +1,14 @@
-package com.omar.config;
+package com.omar.security.service;
 
-import com.omar.entity.RefreshTokenEntity;
-import com.omar.entity.UserDTO;
-import com.omar.entity.UserEntity;
-import com.omar.repo.RefreshTokenRepo;
+import com.omar.security.dto.RefreshTokenDTO;
+import com.omar.security.repo.RefreshTokenRepo;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.persistence.Tuple;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -38,7 +37,7 @@ public class JwtService {
         this.refreshTokenRepo = refreshTokenRepo;
     }
 
-    public String getUuid(String jwt) {
+    public String getUserId(String jwt) {
         return extractClaim(jwt, Claims::getSubject);
     }
 
@@ -53,38 +52,38 @@ public class JwtService {
 
     }
 
-    public String generateToken(String uuid) {
-        return generateToken(new HashMap<>(), uuid);
+    public String generateToken(Long userId) {
+        return generateToken(new HashMap<>(), userId);
     }
 
-    public String generateRefreshToken(String uuid) {
-        return buildToken(new HashMap<>(), uuid, jwtRefreshExpiration);
+    public String generateRefreshToken(Long userId) {
+        return generateRefreshToken(new HashMap<>(), userId);
     }
 
 
-    public String generateToken(Map<String, Object> extraClaims, String uuid) {
-        return buildToken(extraClaims, uuid, jwtExpiration);
+    public String generateToken(Map<String, Object> extraClaims, Long userId) {
+        return buildToken(extraClaims, userId, jwtExpiration);
     }
 
-    private String buildToken(Map<String, Object> extraClaims, String uuid, Long expiration) {
+    public String generateRefreshToken(Map<String, Object> extraClaims, Long userId) {
+        return buildToken(extraClaims, userId, jwtRefreshExpiration);
+    }
+
+    private String buildToken(Map<String, Object> extraClaims, Long userId, Long expiration) {
         return Jwts.builder()
                 .setClaims(extraClaims)
-                .setSubject(uuid)
+                .setSubject(userId.toString())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    public boolean isTokenValid(String jwt, Long userId) {
-        String uuid = getUuid(jwt);
-        Optional<RefreshTokenEntity> refreshTokenEntity = refreshTokenRepo.findByLastAccessTokenAndUserId(jwt, userId);
-        if (refreshTokenEntity.isPresent()) {
-            String refresh = refreshTokenEntity.get().getRefreshToken();
-            String refreshUuid = getUuid(refresh);
-            if (uuid.equals(refreshUuid)) {
-                return true;
-            }
+    public boolean isTokenValid(String jwt) {
+        Long userId = Long.parseLong(getUserId(jwt));
+        Optional<Tuple> refreshTokenTuple = refreshTokenRepo.findByLastAccessToken(jwt);
+        if (refreshTokenTuple.isPresent() && refreshTokenTuple.get().get("user_id", Long.class).equals(userId)) {
+            return true;
         }
         return false;
     }
@@ -95,7 +94,6 @@ public class JwtService {
         } else {
             return false;
         }
-
     }
 
     private Date extractExp(String jwt) {

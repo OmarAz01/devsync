@@ -1,6 +1,6 @@
 package com.omar.config;
 
-import com.omar.service.UserService;
+import com.omar.security.service.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,24 +21,27 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final UserDetailsService userDetailsService;
-    private final UserService userService;
+    private final JwtService jwtService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
         String authHeader = request.getHeader("Authorization");
-        String userId = request.getHeader("USER-ID");
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            SecurityContextHolder.clearContext();
+            filterChain.doFilter(request, response);
+            return;
+        }
+        String jwt = authHeader.substring(7);
+
+        if (!jwtService.isTokenValid(jwt)) {
+            SecurityContextHolder.clearContext();
             filterChain.doFilter(request, response);
             return;
         }
 
-        if (userId == null || userService.findUser(Long.parseLong(userId)).getBody() == null) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-
-        UserDetails userDetails = userDetailsService.loadUserByUsername(userId);
+        Long userId = Long.parseLong(jwtService.getUserId(jwt));
+        UserDetails userDetails = userDetailsService.loadUserByUsername(userId.toString());
 
         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                 userDetails, null, userDetails.getAuthorities());

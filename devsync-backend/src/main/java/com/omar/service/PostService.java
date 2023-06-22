@@ -1,12 +1,10 @@
 package com.omar.service;
 
 import com.omar.entity.PostEntity;
-import com.omar.entity.QueryDTO;
+import com.omar.dto.QueryDTO;
 import org.springframework.http.ResponseEntity;
 
-import javax.swing.text.html.Option;
 import java.util.List;
-import java.util.Optional;
 
 public interface PostService {
 
@@ -18,7 +16,7 @@ public interface PostService {
 
     ResponseEntity<PostEntity> createPost(PostEntity post);
 
-    ResponseEntity<PostEntity> findByUserId(Long userId);
+    ResponseEntity<List<PostEntity>> findByUserId(Long userId);
 
     ResponseEntity<List<PostEntity>> findAllPostsBefore(String date);
 

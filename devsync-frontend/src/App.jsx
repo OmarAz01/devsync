@@ -12,14 +12,18 @@ import '../index.css';
 const App = () => {
   const BASE_URL = 'http://localhost:8080';
   const [loggedIn, setLoggedIn] = useState(false);
-  const user = localStorage.getItem('user');
   useEffect(() => {
+    const user = localStorage.getItem('user');
     if (user) {
       const token = JSON.parse(user).jwt;
+      const headers = {
+        Authorization: `Bearer ${token}`,
+        'USER-ID': JSON.parse(user).id
+      };
 
       axios
-        .get(`${BASE_URL}/api/auth/validate`, {
-          headers: { Authorization: `Bearer ${token}` }
+        .post(`${BASE_URL}/api/auth/validate`, null, {
+          headers: headers
         })
         .then(response => {
           if (response.status === 200) {
@@ -28,10 +32,12 @@ const App = () => {
           }
         })
         .catch(error => {
-          if (error.response.status === 404) {
+          if (
+            error.response.status === 404 ||
+            error.response.status === 403
+          ) {
             setLoggedIn(false);
-          } else if (error.response.status === 403) {
-            setLoggedIn(false);
+            localStorage.removeItem('user');
           } else {
             console.log(error);
           }

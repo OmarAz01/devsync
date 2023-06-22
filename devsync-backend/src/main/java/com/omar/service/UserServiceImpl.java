@@ -1,6 +1,6 @@
 package com.omar.service;
 
-import com.omar.entity.UserDTO;
+import com.omar.dto.UserDTO;
 import com.omar.entity.UserEntity;
 import com.omar.repo.UserRepo;
 import lombok.AllArgsConstructor;
@@ -44,7 +44,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ResponseEntity<UserDTO> updateUser(Long id, UserEntity user) {
-        // STILL NEEDS PROPER IMPLEMENTATION
+        // STILL NEEDS PROPER IMPLEMENTATION (MAYBE TWO DIFFERENT UPDATES, ONE FOR PASSWORD/EMAIL/USERNAME AND ONE FOR OTHER FIELDS)
         Optional<UserEntity> existingUser = userRepo.findById(id);
         if (existingUser.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);

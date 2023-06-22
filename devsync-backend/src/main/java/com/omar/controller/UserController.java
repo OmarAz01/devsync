@@ -1,16 +1,14 @@
 package com.omar.controller;
 
-import com.omar.entity.UserDTO;
+import com.omar.dto.UserDTO;
 import com.omar.entity.UserEntity;
-import com.omar.entity.UserIdsDTO;
+import com.omar.dto.UserIdsDTO;
 import com.omar.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/user")
@@ -28,7 +26,7 @@ public class UserController {
         return userService.deleteUser(id);
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<UserDTO> updateUser(@PathVariable("id") Long id, @RequestBody UserEntity user) {
         return userService.updateUser(id, user);
     }

@@ -1,5 +1,7 @@
 package com.omar.entity;
 
+import com.omar.dto.UserDTO;
+import com.omar.security.entity.RefreshTokenEntity;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
@@ -8,7 +10,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 
 @Entity
 @Data

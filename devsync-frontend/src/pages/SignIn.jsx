@@ -31,15 +31,7 @@ const SignIn = () => {
   };
   return (
     <div className="w-full flex flex-col justify-center">
-      <div className="flex justify-center pt-12">
-        <a
-          href="#"
-          className="bg-black text-white font-bold text-xl p-4">
-          Logo
-        </a>
-      </div>
-
-      <div className="flex flex-col justify-center my-auto pt-8 px-8 md:px-24 lg:px-32">
+      <div className="flex flex-col justify-center my-auto pt-8 mt-28 px-8 md:px-24 lg:px-32">
         <p className="text-center text-3xl">Log In</p>
         <form
           className="flex flex-col md:items-center pt-8"
@@ -84,7 +76,7 @@ const SignIn = () => {
 
           <button
             type="submit"
-            className="bg-black w-full md:max-w-screen-sm text-white font-bold text-lg hover:bg-gray-600 p-2 mt-8">
+            className="bg-black w-full rounded-md md:max-w-screen-sm text-white font-bold text-lg hover:bg-gray-600 p-2 mt-8">
             {' '}
             Log In{' '}
           </button>

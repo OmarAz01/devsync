@@ -1,4 +1,4 @@
-package com.omar.entity;
+package com.omar.dto;
 
 import lombok.Data;
 

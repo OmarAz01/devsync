@@ -1,6 +1,8 @@
-package com.omar.repo;
+package com.omar.security.repo;
 
-import com.omar.entity.RefreshTokenEntity;
+import com.omar.security.dto.RefreshTokenDTO;
+import com.omar.security.entity.RefreshTokenEntity;
+import jakarta.persistence.Tuple;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -17,10 +19,11 @@ public interface RefreshTokenRepo extends JpaRepository<RefreshTokenEntity, Long
     @Query(value = "SELECT last_access_token FROM refresh_tokens WHERE user_id = :userId", nativeQuery = true)
     Optional<String> findLastAccessTokenByUserId(@Param("userId") Long userId);
 
+    @Query(value = "SELECT user_id, refresh_token, last_access_token FROM refresh_tokens WHERE user_id = :userId", nativeQuery = true)
     Optional<RefreshTokenEntity> findByUserId(@Param("userId") Long userId);
 
-    @Query(value = "SELECT * FROM refresh_tokens WHERE last_access_token = :lastAccessToken AND user_id = :userId", nativeQuery = true)
-    Optional<RefreshTokenEntity> findByLastAccessTokenAndUserId(@Param("lastAccessToken") String lastAccessToken, @Param("userId") Long userId);
+    @Query(value = "SELECT * FROM refresh_tokens WHERE last_access_token = :lastAccessToken", nativeQuery = true)
+    Optional<Tuple> findByLastAccessToken(@Param("lastAccessToken") String lastAccessToken);
 
     @Transactional
     @Modifying

@@ -1,4 +1,4 @@
-package com.omar.auth;
+package com.omar.security.entity;
 
 import lombok.*;
 

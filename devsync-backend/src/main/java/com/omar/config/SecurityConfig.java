@@ -24,7 +24,15 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.cors(Customizer.withDefaults()).csrf(csrf -> csrf.disable()).authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/**").permitAll().anyRequest().authenticated())
+                        .requestMatchers("/api/user/userforpost", "").permitAll()
+                        .requestMatchers("/api/posts/all").permitAll()
+                        .requestMatchers("/api/posts/{id}").permitAll()
+                        .requestMatchers("/api/posts/user/{id}").permitAll()
+                        .requestMatchers("/api/posts/query").permitAll()
+                        .requestMatchers("/api/user/{id}").permitAll()
+                        .requestMatchers("/api/auth/register").permitAll()
+                        .requestMatchers("/api/auth/authenticate").permitAll()
+                        .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class).build();
@@ -35,9 +43,9 @@ public class SecurityConfig {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**").allowedOrigins("**")
+                registry.addMapping("/**").allowedOrigins("*")
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS")
-                        .allowedHeaders("*").allowCredentials(true).maxAge(3600);
+                        .allowedHeaders("*");
             }
         };
     }

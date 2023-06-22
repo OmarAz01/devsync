@@ -1,13 +1,15 @@
-package com.omar.auth;
+package com.omar.security.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.omar.Utility.UniqueStringGenerator;
-import com.omar.config.JwtService;
-import com.omar.entity.RefreshTokenEntity;
+import com.omar.security.dto.RefreshTokenDTO;
+import com.omar.security.entity.AuthenticationRequest;
+import com.omar.security.entity.AuthenticationResponse;
+import com.omar.security.entity.RegisterRequest;
+import com.omar.security.entity.RefreshTokenEntity;
 import com.omar.entity.Role;
-import com.omar.entity.UserDTO;
+import com.omar.dto.UserDTO;
 import com.omar.entity.UserEntity;
-import com.omar.service.RefreshTokenService;
 import com.omar.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -24,7 +26,8 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.Collections;
-import java.util.Optional;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -52,7 +55,7 @@ public class AuthService {
         user.setEmail(request.getEmail());
         user.setUsername(request.getUsername());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setRole(Role.USER);
+        user.setRole(Role.USER); // fix this later
 
         // Saving the user
         try {
@@ -62,12 +65,12 @@ public class AuthService {
                         .builder().error("User registration failed").build());
             }
             // Create refresh and access tokens
-            String uuid = UniqueStringGenerator.generateUniqueString();
-            String jwt = jwtService.generateToken(uuid);
-            String refreshToken = jwtService.generateRefreshToken(uuid);
+            Long userId = savedUser.getUserId();
+            String jwt = jwtService.generateToken(userId);
+            String refreshToken = jwtService.generateRefreshToken(userId);
             refreshTokenService.createRefreshToken(savedUser.getUserId(), refreshToken, jwt);
             return ResponseEntity.status(HttpStatus.OK).body(AuthenticationResponse.builder()
-                    .userId(savedUser.getUserId()).jwt(jwt).build());
+                    .userId(userId).jwt(jwt).build());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(AuthenticationResponse
                     .builder().error("User registration failed").build());
@@ -76,18 +79,20 @@ public class AuthService {
 
 
     public ResponseEntity<AuthenticationResponse> authenticate(AuthenticationRequest request) {
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
         UserEntity user = userService.findByEmail(request.getEmail()).getBody();
         if (user == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(AuthenticationResponse
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(AuthenticationResponse
                     .builder().error("User not found").build());
+        } else {
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                    request.getEmail(), request.getPassword(), Collections.emptyList()));
         }
+        Long userId = user.getUserId();
         // Delete old refresh token
-        refreshTokenService.deleteRefreshToken(user.getUserId());
-        // get new uuid for subject in jwt
-        String uuid = UniqueStringGenerator.generateUniqueString();
-        String jwt = jwtService.generateToken(uuid);
-        String refreshToken = jwtService.generateRefreshToken(uuid);
+        refreshTokenService.deleteRefreshToken(userId);
+        // Create new refresh and access tokens
+        String jwt = jwtService.generateToken(userId);
+        String refreshToken = jwtService.generateRefreshToken(userId);
         refreshTokenService.createRefreshToken(user.getUserId(), refreshToken, jwt);
         SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(
                 request.getEmail(), request.getPassword(), Collections.emptyList()));
@@ -96,55 +101,49 @@ public class AuthService {
     }
 
     public void validateToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        Object currentPrincipal = auth.getPrincipal();
+        String authHeader = request.getHeader("Authorization");
+        Authentication authContext = SecurityContextHolder.getContext().getAuthentication();
+        Object currentPrincipal = authContext.getPrincipal();
         Long userId;
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.getWriter().write("No token found");
             return;
         }
-        // if userid passed is valid
+
         if (currentPrincipal instanceof UserEntity) {
             UserEntity currentUser = (UserEntity) currentPrincipal;
             userId = currentUser.getUserId();
         } else {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("No user found");
+            response.getWriter().write("Not logged in");
             return;
         }
 
         String jwt = authHeader.substring(7);
-        String jwtUuid = jwtService.getUuid(jwt);
 
-        if (jwtUuid == null || !jwtService.isTokenValid(jwt, userId)) {
+        if (!jwtService.isTokenValid(jwt)) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.getWriter().write("Invalid token");
             return;
         }
 
         if (jwtService.isTokenExpired(jwt)) {
-            RefreshTokenEntity refreshToken = refreshTokenService.findByLastAccessTokenAndUserId(jwt, userId).getBody();
-            if (refreshToken == null) {
+            RefreshTokenDTO refreshTokenEntity = refreshTokenService.findByLastAccessToken(jwt).getBody();
+            if (refreshTokenEntity == null) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 response.getWriter().write("Refresh token not found");
                 return;
             }
-            if (jwtService.isTokenExpired(refreshToken.getRefreshToken())) {
+            if (jwtService.isTokenExpired(refreshTokenEntity.getRefreshToken())) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 response.getWriter().write("Refresh token expired");
                 return;
             }
-            String refreshUuid = jwtService.getUuid(refreshToken.getRefreshToken());
-            if (!refreshUuid.equals(jwtUuid)) {
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.getWriter().write("Token not valid");
-                return;
-            }
+
             // If the refresh token is valid and not expired, create a new access token and update database with it
-            String newJwt = jwtService.generateToken(refreshUuid);
-            refreshTokenService.updateLastAccessToken(refreshToken.getUserId(), newJwt);
+            String newJwt = jwtService.generateToken(userId);
+            refreshTokenService.updateLastAccessToken(userId, newJwt);
             AuthenticationResponse authenticationResponse = AuthenticationResponse.builder()
                     .userId(userId).jwt(newJwt).build();
             new ObjectMapper().writeValue(response.getOutputStream(), authenticationResponse);

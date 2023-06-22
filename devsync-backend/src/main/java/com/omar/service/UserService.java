@@ -1,12 +1,10 @@
 package com.omar.service;
 
-import com.omar.entity.RefreshTokenEntity;
-import com.omar.entity.UserDTO;
+import com.omar.dto.UserDTO;
 import com.omar.entity.UserEntity;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface UserService {
     ResponseEntity<UserDTO> findUser(Long id);

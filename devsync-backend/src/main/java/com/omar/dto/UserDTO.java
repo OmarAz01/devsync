@@ -1,5 +1,6 @@
-package com.omar.entity;
+package com.omar.dto;
 
+import com.omar.entity.UserEntity;
 import lombok.*;
 
 import java.util.ArrayList;

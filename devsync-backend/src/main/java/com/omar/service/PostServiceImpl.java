@@ -1,7 +1,7 @@
 package com.omar.service;
 
 import com.omar.entity.PostEntity;
-import com.omar.entity.QueryDTO;
+import com.omar.dto.QueryDTO;
 import com.omar.repo.PostRepo;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -42,9 +42,6 @@ public class PostServiceImpl implements PostService {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
         existingPost.get().setContent(post.getContent());
-        existingPost.get().setSkillNeeded(post.getSkillNeeded());
-        existingPost.get().setLevelNeeded(post.getLevelNeeded());
-        existingPost.get().setDateCreated(post.getDateCreated());
         try {
             return ResponseEntity.status(HttpStatus.OK).body(postRepo.save(existingPost.get()));
         } catch (Exception e) {
@@ -73,7 +70,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public ResponseEntity<PostEntity> findByUserId(Long userId) {
+    public ResponseEntity<List<PostEntity>> findByUserId(Long userId) {
         return postRepo.findByUserUserId(userId).isEmpty() ? ResponseEntity.status(HttpStatus.NOT_FOUND).body(null) :
                 ResponseEntity.status(HttpStatus.OK).body(postRepo.findByUserUserId(userId).get());
     }
@@ -88,7 +85,7 @@ public class PostServiceImpl implements PostService {
         }
         try {
             Optional<List<PostEntity>> posts = postRepo.findAllPostsBefore(decodedDateTime.substring(0, 19));
-            if (posts.isEmpty()) {
+            if (posts.get().isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
             }
             return ResponseEntity.status(HttpStatus.OK).body(posts.get());
@@ -108,7 +105,7 @@ public class PostServiceImpl implements PostService {
         }
         try {
             Optional<List<PostEntity>> posts = postRepo.findBySkillAndLevel(query.getSkillQuery(), query.getLevelQuery(), decodedDateTime.substring(0, 19));
-            if (posts.isEmpty()) {
+            if (posts.get().isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
             }
             return ResponseEntity.status(HttpStatus.OK).body(posts.get());

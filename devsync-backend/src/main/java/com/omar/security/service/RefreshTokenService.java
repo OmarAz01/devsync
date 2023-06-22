@@ -1,9 +1,7 @@
-package com.omar.service;
+package com.omar.security.service;
 
-import com.omar.entity.RefreshTokenEntity;
+import com.omar.security.entity.RefreshTokenEntity;
 import org.springframework.http.ResponseEntity;
-
-import java.util.Optional;
 
 public interface RefreshTokenService {
 
@@ -15,8 +13,7 @@ public interface RefreshTokenService {
 
     ResponseEntity<String> getLastAccessToken(Long userId);
 
-    ResponseEntity<RefreshTokenEntity> findByLastAccessTokenAndUserId(String lastAccessToken, Long userId);
-
+    ResponseEntity<RefreshTokenEntity> findByLastAccessToken(String lastAccessToken);
 
     ResponseEntity<RefreshTokenEntity> createRefreshToken(Long userId, String refreshToken, String lastAccessToken);
 

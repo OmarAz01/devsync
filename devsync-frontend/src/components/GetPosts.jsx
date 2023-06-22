@@ -30,7 +30,6 @@ const GetPosts = ({ createAlert }) => {
 
   const updateFilterBy = filter => {
     setFilterBy(filter);
-    console.log(filterBy);
   };
 
   const getPosts = async () => {
@@ -51,7 +50,12 @@ const GetPosts = ({ createAlert }) => {
           fetchUsersForPosts(response.data);
         }
       } catch (error) {
-        console.log(error);
+        if (error.response && error.response.status === 404) {
+          setLastPost(true);
+          console.log('No posts found');
+        } else {
+          console.log(error);
+        }
       }
     } else {
       try {
@@ -69,7 +73,6 @@ const GetPosts = ({ createAlert }) => {
           setLastPost(true);
         }
         if (response.status === 200) {
-          console.log(response.data);
           setPosts(response.data);
           setLastPostDate(
             response.data[response.data.length - 1].dateCreated
@@ -77,7 +80,12 @@ const GetPosts = ({ createAlert }) => {
           fetchUsersForPosts(response.data);
         }
       } catch (error) {
-        console.log(error);
+        if (error.response && error.response.status === 404) {
+          setLastPost(true);
+          console.log('No posts found');
+        } else {
+          console.log(error);
+        }
       }
     }
   };
