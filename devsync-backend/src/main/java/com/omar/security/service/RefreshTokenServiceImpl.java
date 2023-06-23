@@ -63,15 +63,11 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 
     @Override
     public ResponseEntity<RefreshTokenEntity> findByLastAccessToken(String lastAccessToken) {
-        Optional<Tuple> refreshToken = refreshTokenRepo.findByLastAccessToken(lastAccessToken);
-        if (refreshToken.isEmpty()) {
+        Optional<RefreshTokenEntity> refreshTokenEntity = refreshTokenRepo.findByLastAccessToken(lastAccessToken);
+        if (refreshTokenEntity.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
-        RefreshTokenEntity refreshTokenDTO = new RefreshTokenEntity();
-        refreshTokenDTO.setUserId(refreshToken.get().get("user_id", Long.class));
-        refreshTokenDTO.setRefreshToken(refreshToken.get().get("refresh_token", String.class));
-        refreshTokenDTO.setLastAccessToken(refreshToken.get().get("last_access_token", String.class));
-        return ResponseEntity.status(HttpStatus.OK).body(refreshTokenDTO);
+        return ResponseEntity.status(HttpStatus.OK).body(refreshTokenEntity.get());
     }
 
     @Override

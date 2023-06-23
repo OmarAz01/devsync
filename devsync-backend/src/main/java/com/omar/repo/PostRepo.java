@@ -15,7 +15,7 @@ public interface PostRepo extends JpaRepository<PostEntity, Long> {
     Optional<List<PostEntity>> findAllPostsBefore(@Param("date") String date);
 
     @Query(value = "SELECT * FROM posts WHERE user_id = :userId", nativeQuery = true)
-    Optional<List<PostEntity>> findByUserUserId(@Param("userId") Long userId);
+    Optional<List<PostEntity>> findByUserId(@Param("userId") Long userId);
 
     @Query(value = "SELECT * FROM posts WHERE skill_needed LIKE CONCAT('%', :skillQuery, '%') AND level_needed LIKE CONCAT('%', :levelQuery, '%') AND date_created < :date ORDER BY post_id DESC LIMIT 10", nativeQuery = true)
     Optional<List<PostEntity>> findBySkillAndLevel(@Param("skillQuery") String skillQuery, @Param("levelQuery") String levelQuery, @Param("date") String date);

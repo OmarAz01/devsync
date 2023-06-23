@@ -1,14 +1,19 @@
 package com.omar.service;
 
+import com.omar.dto.PostDTO;
 import com.omar.entity.PostEntity;
 import com.omar.dto.QueryDTO;
+import com.omar.entity.UserEntity;
 import com.omar.repo.PostRepo;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.net.URLDecoder;
@@ -23,7 +28,16 @@ public class PostServiceImpl implements PostService {
     public ResponseEntity<Long> deletePost(Long id) {
         Optional<PostEntity> post = postRepo.findById(id);
         if (post.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(id);
+        }
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Object principal = authentication.getPrincipal();
+        if (principal instanceof UserEntity) {
+            if (!((UserEntity) principal).getUserId().equals(post.get().getUser().getUserId())) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
         try {
             postRepo.deleteById(id);
@@ -36,14 +50,23 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public ResponseEntity<PostEntity> updatePost(Long id, PostEntity post) {
+    public ResponseEntity<PostDTO> updatePost(Long id, PostEntity post) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Object principal = authentication.getPrincipal();
+        if (principal instanceof UserEntity) {
+            if (!((UserEntity) principal).getUserId().equals(post.getUser().getUserId())) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
         Optional<PostEntity> existingPost = postRepo.findById(id);
         if (existingPost.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
         existingPost.get().setContent(post.getContent());
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(postRepo.save(existingPost.get()));
+            return ResponseEntity.status(HttpStatus.OK).body(PostDTO.convertToDTO(postRepo.save(existingPost.get())));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
@@ -51,32 +74,49 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public ResponseEntity<PostEntity> findPost(Long id) {
+    public ResponseEntity<PostDTO> findPost(Long id) {
         Optional<PostEntity> post = postRepo.findById(id);
         if (post.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
-        return ResponseEntity.status(HttpStatus.OK).body(post.get());
+        PostDTO postDTO = PostDTO.convertToDTO(post.get());
+        return ResponseEntity.status(HttpStatus.OK).body(postDTO);
     }
 
     @Override
-    public ResponseEntity<PostEntity> createPost(PostEntity post) {
+    public ResponseEntity<PostDTO> createPost(PostEntity post) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Object principal = authentication.getPrincipal();
+        if (principal instanceof UserEntity) {
+            post.setUser((UserEntity) principal);
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
         try {
             PostEntity newPost = postRepo.save(post);
-            return ResponseEntity.status(HttpStatus.CREATED).body(newPost);
+            PostDTO postDTO = PostDTO.convertToDTO(newPost);
+            return ResponseEntity.status(HttpStatus.CREATED).body(postDTO);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
 
     @Override
-    public ResponseEntity<List<PostEntity>> findByUserId(Long userId) {
-        return postRepo.findByUserUserId(userId).isEmpty() ? ResponseEntity.status(HttpStatus.NOT_FOUND).body(null) :
-                ResponseEntity.status(HttpStatus.OK).body(postRepo.findByUserUserId(userId).get());
+    public ResponseEntity<List<PostDTO>> findByUserId(Long userId) {
+        List<PostDTO> postsDTO = new ArrayList<>();
+        Optional<List<PostEntity>> posts = postRepo.findByUserId(userId);
+        if (posts.isEmpty() || posts.get().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+        for (PostEntity post : posts.get()) {
+            postsDTO.add(PostDTO.convertToDTO(post));
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(postsDTO);
     }
 
     @Override
-    public ResponseEntity<List<PostEntity>> findAllPostsBefore(String date) {
+    public ResponseEntity<List<PostDTO>> findAllPostsBefore(String date) {
+        List<PostDTO> postsDTO = new ArrayList<>();
         String decodedDateTime;
         try {
             decodedDateTime = URLDecoder.decode(date, StandardCharsets.UTF_8.toString());
@@ -88,15 +128,20 @@ public class PostServiceImpl implements PostService {
             if (posts.get().isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
             }
-            return ResponseEntity.status(HttpStatus.OK).body(posts.get());
+            for (PostEntity post : posts.get()) {
+                postsDTO.add(PostDTO.convertToDTO(post));
+            }
+            return ResponseEntity.status(HttpStatus.OK).body(postsDTO);
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
 
 
     @Override
-    public ResponseEntity<List<PostEntity>> findBySkillAndLevel(QueryDTO query) {
+    public ResponseEntity<List<PostDTO>> findBySkillAndLevel(QueryDTO query) {
+        List<PostDTO> postsDTO = new ArrayList<>();
         String decodedDateTime;
         try {
             decodedDateTime = URLDecoder.decode(query.getDate(), StandardCharsets.UTF_8.toString());
@@ -108,7 +153,10 @@ public class PostServiceImpl implements PostService {
             if (posts.get().isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
             }
-            return ResponseEntity.status(HttpStatus.OK).body(posts.get());
+            for (PostEntity post : posts.get()) {
+                postsDTO.add(PostDTO.convertToDTO(post));
+            }
+            return ResponseEntity.status(HttpStatus.OK).body(postsDTO);
         } catch (Exception e) {
             throw new RuntimeException("Error occurred while retrieving posts by skill and level", e);
         }

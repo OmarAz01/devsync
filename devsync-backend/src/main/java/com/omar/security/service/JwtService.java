@@ -1,6 +1,6 @@
 package com.omar.security.service;
 
-import com.omar.security.dto.RefreshTokenDTO;
+import com.omar.security.entity.RefreshTokenEntity;
 import com.omar.security.repo.RefreshTokenRepo;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -81,8 +81,8 @@ public class JwtService {
 
     public boolean isTokenValid(String jwt) {
         Long userId = Long.parseLong(getUserId(jwt));
-        Optional<Tuple> refreshTokenTuple = refreshTokenRepo.findByLastAccessToken(jwt);
-        if (refreshTokenTuple.isPresent() && refreshTokenTuple.get().get("user_id", Long.class).equals(userId)) {
+        Optional<RefreshTokenEntity> refreshTokenEntity = refreshTokenRepo.findByLastAccessToken(jwt);
+        if (refreshTokenEntity.isPresent() && refreshTokenEntity.get().getUser().getUserId().equals(userId)) {
             return true;
         }
         return false;

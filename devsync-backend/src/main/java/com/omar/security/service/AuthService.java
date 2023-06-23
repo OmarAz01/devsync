@@ -1,12 +1,10 @@
 package com.omar.security.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.omar.Utility.UniqueStringGenerator;
-import com.omar.security.dto.RefreshTokenDTO;
 import com.omar.security.entity.AuthenticationRequest;
 import com.omar.security.entity.AuthenticationResponse;
-import com.omar.security.entity.RegisterRequest;
 import com.omar.security.entity.RefreshTokenEntity;
+import com.omar.security.entity.RegisterRequest;
 import com.omar.entity.Role;
 import com.omar.dto.UserDTO;
 import com.omar.entity.UserEntity;
@@ -14,7 +12,6 @@ import com.omar.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,8 +23,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -129,7 +124,7 @@ public class AuthService {
         }
 
         if (jwtService.isTokenExpired(jwt)) {
-            RefreshTokenDTO refreshTokenEntity = refreshTokenService.findByLastAccessToken(jwt).getBody();
+            RefreshTokenEntity refreshTokenEntity = refreshTokenService.findByLastAccessToken(jwt).getBody();
             if (refreshTokenEntity == null) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 response.getWriter().write("Refresh token not found");
