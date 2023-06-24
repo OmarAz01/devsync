@@ -13,8 +13,6 @@ public interface UserService {
 
     ResponseEntity<UserDTO> updateUser(Long id, UserEntity user);
 
-    ResponseEntity<List<UserDTO>> findUsersWithIds(List<Long> userIds);
-
     ResponseEntity<UserDTO> findByUsername(String username);
 
     ResponseEntity<UserEntity> findByEmail(String email);

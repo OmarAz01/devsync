@@ -18,9 +18,6 @@ public interface UserRepo extends JpaRepository<UserEntity, Long> {
     @Query(value = "SELECT user_id, email, username, image_uri, skill, level FROM users WHERE username = :username", nativeQuery = true)
     Optional<UserDTO> findByUsername(@Param("username") String username);
 
-    @Query(value = "SELECT user_id, email, username, image_uri, skill, level FROM users WHERE user_id IN :userIds", nativeQuery = true)
-    Optional<List<UserDTO>> findUsersWithIds(@Param("userIds") List<Long> userIds);
-
     Optional<UserEntity> findByUserId(@Param("userId") Long userId);
 
     @Modifying

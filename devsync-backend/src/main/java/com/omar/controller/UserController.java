@@ -2,13 +2,10 @@ package com.omar.controller;
 
 import com.omar.dto.UserDTO;
 import com.omar.entity.UserEntity;
-import com.omar.dto.UserIdsDTO;
 import com.omar.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/user")
@@ -31,8 +28,4 @@ public class UserController {
         return userService.updateUser(id, user);
     }
 
-    @PostMapping("/userforpost")
-    public ResponseEntity<List<UserDTO>> getUsersWithIds(@RequestBody UserIdsDTO userIds) {
-        return userService.findUsersWithIds(userIds.getUserIds());
-    }
 }

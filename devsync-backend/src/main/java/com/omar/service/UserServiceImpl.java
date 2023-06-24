@@ -62,15 +62,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<List<UserDTO>> findUsersWithIds(List<Long> userIds) {
-        Optional<List<UserDTO>> users = userRepo.findUsersWithIds(userIds);
-        if (users.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
-        return ResponseEntity.status(HttpStatus.OK).body(users.get());
-    }
-
-    @Override
     public ResponseEntity<UserDTO> findByUsername(String username) {
         Optional<UserDTO> user = userRepo.findByUsername(username);
         if (user.isEmpty()) {

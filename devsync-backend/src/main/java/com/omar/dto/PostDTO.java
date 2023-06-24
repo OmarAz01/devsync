@@ -12,6 +12,9 @@ public class PostDTO {
     private Long postId;
     private String content;
     private Long userId;
+    private String username;
+    private String imageUri;
+    private String userLevel;
     private String skillNeeded;
     private String levelNeeded;
     private String dateCreated;
@@ -21,6 +24,9 @@ public class PostDTO {
                 post.getPostId(),
                 post.getContent(),
                 post.getUser().getUserId(),
+                post.getUser().getUsername(),
+                post.getUser().getImageUri(),
+                post.getUser().getLevel(),
                 post.getSkillNeeded(),
                 post.getLevelNeeded(),
                 post.getDateCreated()
