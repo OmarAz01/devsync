@@ -9,7 +9,6 @@ const SubmitPost = ({ setShow, createAlert }) => {
     content: '',
     levelNeeded: ['Beginner'],
     skillNeeded: ['Web Dev'],
-    userId: '',
     dateCreated: ''
   });
 
@@ -26,19 +25,28 @@ const SubmitPost = ({ setShow, createAlert }) => {
         .replace('T', ' ');
       const updatedPost = {
         ...post,
-        userId: currUser.userId,
         levelNeeded: post.levelNeeded.join(', '),
         skillNeeded: post.skillNeeded.join(', '),
         dateCreated: currentFormattedDate
       };
 
       axios
-        .post(`${BASE_URL}/api/posts/create`, updatedPost)
+        .post(`${BASE_URL}/api/posts/create`, updatedPost, {
+          headers: { Authorization: `Bearer ${currUser.token}` }
+        })
         .then(response => {
+          if (response.status !== 201) {
+            createAlert('Error creating post', 'error');
+            return;
+          }
           setShow(false);
           createAlert('Post created successfully', 'success');
         })
         .catch(error => {
+          if (error.response.status === 401) {
+            createAlert('Please login to create a post', 'error');
+            return;
+          }
           console.log(error);
           createAlert('Error creating post', 'error');
         });

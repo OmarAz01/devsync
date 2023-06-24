@@ -11,7 +11,6 @@ const GetPosts = ({ createAlert }) => {
   const [lastPostDate, setLastPostDate] = useState(
     new Date().toISOString().slice(0, 19).replace('T', ' ')
   );
-  const [users, setUsers] = useState([]);
   const [editMode, setEditMode] = useState({
     edit: false,
     postId: '',
@@ -47,7 +46,6 @@ const GetPosts = ({ createAlert }) => {
           setLastPostDate(
             response.data[response.data.length - 1].dateCreated
           );
-          fetchUsersForPosts(response.data);
         }
       } catch (error) {
         if (error.response && error.response.status === 404) {
@@ -77,10 +75,10 @@ const GetPosts = ({ createAlert }) => {
           setLastPostDate(
             response.data[response.data.length - 1].dateCreated
           );
-          fetchUsersForPosts(response.data);
         }
       } catch (error) {
         if (error.response && error.response.status === 404) {
+          setPosts([]);
           setLastPost(true);
           console.log('No posts found');
         } else {
@@ -90,31 +88,11 @@ const GetPosts = ({ createAlert }) => {
     }
   };
 
-  // Fetches all the users of the posts to display the username and profile picture
-  const fetchUsersForPosts = async posts => {
-    const userIds = posts.map(post => post.userId);
-
-    try {
-      const response = await axios.post(
-        `${BASE_URL}/api/user/userforpost`,
-        { userIds }
-      );
-      setUsers(response.data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  // Fetches the one user for the post to check if the user is the owner of the post
-  const fetchUserForPost = id => {
-    const user = users.find(user => user.userId === id);
-
-    return user;
-  };
-
   const handleDelete = async postId => {
     try {
-      await axios.delete(`${BASE_URL}/api/posts/delete/${postId}`);
+      await axios.delete(`${BASE_URL}/api/posts/delete/${postId}`, {
+        headers: { Authorization: `Bearer ${currUser.token}` }
+      });
       setPosts(
         posts.filter(post => {
           return post.postId !== postId;
@@ -130,7 +108,6 @@ const GetPosts = ({ createAlert }) => {
     try {
       const response = await axios.get(`${BASE_URL}/api/posts/all`);
       setPosts(response.data);
-      fetchUsersForPosts(response.data);
     } catch (error) {
       console.log(error);
     }
@@ -166,7 +143,8 @@ const GetPosts = ({ createAlert }) => {
       axios
         .put(
           BASE_URL + '/api/posts/update/' + originalPost.postId,
-          editedPost
+          editedPost,
+          { headers: { Authorization: `Bearer ${currUser.token}` } }
         )
         .then(() => {
           setEditMode({ ...editMode, edit: false });
@@ -201,6 +179,7 @@ const GetPosts = ({ createAlert }) => {
     }
   };
 
+  // For messaging users
   const handleSync = () => {
     return;
   };
@@ -220,7 +199,6 @@ const GetPosts = ({ createAlert }) => {
           setLastPostDate(
             response.data[response.data.length - 1].dateCreated
           );
-          fetchUsersForPosts(response.data);
         }
       } catch (error) {
         console.log(error);
@@ -242,7 +220,6 @@ const GetPosts = ({ createAlert }) => {
           setLastPostDate(
             response.data[response.data.length - 1].dateCreated
           );
-          fetchUsersForPosts(response.data);
         }
       } catch (error) {
         console.log(error);
@@ -259,7 +236,6 @@ const GetPosts = ({ createAlert }) => {
 
       {posts.length > 0 &&
         posts.map(post => {
-          const postUser = fetchUserForPost(post.userId);
           const submittedDate = new Date(post.dateCreated + 'Z');
           const currentDate = new Date();
           const timeDiff = Math.abs(
@@ -280,11 +256,11 @@ const GetPosts = ({ createAlert }) => {
                 />
                 <h4 className="md:text-base text-xs">
                   {' '}
-                  {postUser ? '@' + postUser.username : null}{' '}
+                  {'@' + post.username}{' '}
                 </h4>
                 <h4 className="md:text-base text-xs">
                   {' '}
-                  {postUser ? postUser.level : null}{' '}
+                  {post.userLevel}{' '}
                 </h4>
                 {currUser && post.userId === currUser.userId ? (
                   <>
