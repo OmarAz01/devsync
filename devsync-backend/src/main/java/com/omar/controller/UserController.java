@@ -23,9 +23,9 @@ public class UserController {
         return userService.deleteUser(id);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<UserDTO> updateUser(@PathVariable("id") Long id, @RequestBody UserEntity user) {
-        return userService.updateUser(id, user);
+    @PutMapping("/{id}/image")
+    public ResponseEntity<UserDTO> updateUserImage(@PathVariable("id") Long id, @RequestBody String image) {
+        return userService.updateUserImage(id, image);
     }
 
 }

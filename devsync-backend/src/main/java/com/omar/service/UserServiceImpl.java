@@ -6,6 +6,8 @@ import com.omar.repo.UserRepo;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -43,15 +45,25 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<UserDTO> updateUser(Long id, UserEntity user) {
-        // STILL NEEDS PROPER IMPLEMENTATION (MAYBE TWO DIFFERENT UPDATES, ONE FOR PASSWORD/EMAIL/USERNAME AND ONE FOR OTHER FIELDS)
+    public ResponseEntity<UserDTO> updateUserImage(Long id, String image) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Object principal = authentication.getPrincipal();
+        if (principal instanceof UserEntity) {
+            if (!((UserEntity) principal).getUserId().equals(id)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
+
         Optional<UserEntity> existingUser = userRepo.findById(id);
         if (existingUser.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
-        existingUser.get().setUsername(user.getUsername());
-        existingUser.get().setPassword(passwordEncoder.encode(user.getPassword()));
-        existingUser.get().setRole(user.getRole());
+        if (existingUser.get().getImageUri() != null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+        existingUser.get().setImageUri(image);
         try {
             UserEntity userRes = userRepo.save(existingUser.get());
             UserDTO userDTO = UserDTO.convertToDTO(userRes);

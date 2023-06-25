@@ -11,7 +11,7 @@ public interface UserService {
 
     ResponseEntity<Long> deleteUser(Long id);
 
-    ResponseEntity<UserDTO> updateUser(Long id, UserEntity user);
+    ResponseEntity<UserDTO> updateUserImage(Long id, String image);
 
     ResponseEntity<UserDTO> findByUsername(String username);
 
