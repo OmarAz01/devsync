@@ -47,7 +47,7 @@ const Feed = () => {
                 show
                   ? 'opacity-0 pointer-events-none transition-opacity'
                   : 'transition-opacity opacity-100 duration-300 delay-500'
-              } hover:bg-zinc-600 md:text-2xl text-lg py-1 h-fit border-2 border-black px-4 shadow-sm rounded-md md:mx-8 my-8 bg-zinc-900 mx-4 hover:cursor-pointer w-fit`}>
+              } hover:bg-zinc-600 md:text-2xl text-lg py-1 h-fit border-2 border-black px-4 shadow-sm rounded-md md:mx-8 mt-8 bg-zinc-900 mx-4 hover:cursor-pointer w-fit`}>
               New Post
             </button>
           </div>

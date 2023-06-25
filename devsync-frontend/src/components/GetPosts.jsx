@@ -248,17 +248,17 @@ const GetPosts = ({ createAlert }) => {
               key={post.postId}
               className="pt-4 pb-6 border rounded-lg shadow-md border-black my-1 md:my-2 min-w-full
             max-w-screen-md bg-zinc-800 flex flex-row">
-              <div className="flex flex-col text-center -center items-center min-w-fit md:w-40">
+              <div className="flex flex-col text-center items-center min-w-fit md:w-40">
                 <Image
                   src={pp1Image}
                   alt="image"
                   className="md:w-20 md:h-20 w-12 h-12 mx-4 mb-2 rounded-full"
                 />
-                <h4 className="md:text-base text-xs">
+                <h4 className="md:text-base text-sm">
                   {' '}
                   {'@' + post.username}{' '}
                 </h4>
-                <h4 className="md:text-base text-xs">
+                <h4 className="md:text-sm text-xs text-zinc-400">
                   {' '}
                   {post.userLevel}{' '}
                 </h4>
@@ -269,13 +269,13 @@ const GetPosts = ({ createAlert }) => {
                         handleDelete(post.postId);
                       }}
                       className="bg-zinc-900 mt-2 py-1
-                px-2 hover:bg-red-500 rounded-md w-18 border-black border shadow-sm md:text-base text-xs">
+                px-2 hover:bg-red-500 rounded-md w-18 border-black border shadow-sm md:text-base text-sm">
                       Delete
                     </button>
                     <button
                       onClick={() => handleEdit(post)}
                       className="bg-zinc-900 mt-2  py-1
-                px-4 hover:bg-blue-500 rounded-md border-black border shadow-sm md:text-base text-xs">
+                px-4 hover:bg-blue-500 rounded-md border-black border shadow-sm md:text-base text-sm">
                       Edit
                     </button>
                   </>
@@ -285,7 +285,7 @@ const GetPosts = ({ createAlert }) => {
                       handleSync(post.userId);
                     }}
                     className="bg-zinc-900 mt-2 py-1
-                px-4 hover:bg-zinc-600 rounded-md w-18 border-black border shadow-sm md:text-base text-xs">
+                px-4 hover:bg-zinc-600 rounded-md w-18 border-black border shadow-sm md:text-base text-sm">
                     Sync
                   </button>
                 )}
@@ -309,17 +309,18 @@ const GetPosts = ({ createAlert }) => {
                     className="flex flex-col md:h-40 h-36 max-w-full relative rounded-lg bg-zinc-700 resize-none px-4 pb-2 pt-4 outline-none text-xs md:text-base"
                   />
                 ) : (
-                  <p className="text-xs md:text-base px-4 pt-4 pb-2 break-all mb-8">
+                  // Regular post content
+                  <p className="text-sm md:text-base px-4 pt-4 pb-2 break-all mb-8">
                     {post.content}
                   </p>
                 )}
                 <div className="flex flex-col py-4 ">
-                  <h3 className="text-xs md:text-base px-4">
+                  <h3 className="text-sm md:text-base px-4">
                     {' '}
                     {post.skillNeeded}
                   </h3>
 
-                  <h3 className="text-xs md:text-base pt-2 px-4">
+                  <h3 className="text-sm md:text-base pt-2 px-4">
                     {' '}
                     {post.levelNeeded}
                   </h3>

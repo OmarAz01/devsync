@@ -12,13 +12,13 @@ import '../index.css';
 const App = () => {
   const BASE_URL = 'http://localhost:8080';
   const [loggedIn, setLoggedIn] = useState(false);
+  const [open, setOpen] = useState(false);
   useEffect(() => {
-    const user = localStorage.getItem('user');
-    if (user) {
-      const token = JSON.parse(user).jwt;
+    const currUser = JSON.parse(localStorage.getItem('user'));
+    if (currUser) {
+      const token = currUser.jwt;
       const headers = {
-        Authorization: `Bearer ${token}`,
-        'USER-ID': JSON.parse(user).id
+        Authorization: `Bearer ${token}`
       };
 
       axios
@@ -27,6 +27,10 @@ const App = () => {
         })
         .then(response => {
           if (response.status === 200) {
+            localStorage.setItem(
+              'user',
+              JSON.stringify(response.data)
+            );
             setLoggedIn(true);
             console.log('Logged In');
           }
@@ -51,24 +55,48 @@ const App = () => {
     <BrowserRouter>
       <header className="flex flex-row justify-end md:text-lg">
         <Link to="/">
-          <h4 className="p-4 absolute left-0 hover:text-gray-400">
+          <h4 className="p-4 absolute left-0 hover:text-zinc-500">
             {' '}
             devsync{' '}
           </h4>
         </Link>
-        <Link to="/messaging">
-          <h4 className="p-4 relative hover:text-gray-400">
+        <Link to="/feed">
+          <h4 className="p-4 relative hover:text-zinc-500">
             {' '}
-            Messaging{' '}
+            Feed{' '}
           </h4>
         </Link>
         {loggedIn ? (
-          <Link to="/myaccount">
-            <h4 className="p-4 hover:text-gray-400"> My Account </h4>
-          </Link>
+          <>
+            <h4
+              className="p-4 hover:text-zinc-500 hover:cursor-pointer"
+              onClick={e => setOpen(!open)}>
+              My Account
+            </h4>
+            <div
+              className={`${
+                open ? 'show' : 'hidden'
+              } absolute right-0 top-14 border mx-2 rounded-md border-zinc-600 `}>
+              <Link to="/myaccount">
+                <h4 className="px-4 py-1 hover:text-zinc-500 text-left border-b border-zinc-600">
+                  Profile
+                </h4>
+              </Link>
+              <Link to="/messaging">
+                <h4 className="px-4 py-1 hover:text-zinc-500 text-left border-b border-zinc-600">
+                  Messaging
+                </h4>
+              </Link>
+              <Link to="/signout">
+                <h4 className="px-4 py-1 hover:text-red-500 text-left">
+                  Sign Out
+                </h4>
+              </Link>
+            </div>
+          </>
         ) : (
           <Link to="/signin">
-            <h4 className="p-4 hover:text-gray-400"> Sign In </h4>
+            <h4 className="p-4 hover:text-gray-400">Sign In</h4>
           </Link>
         )}
       </header>

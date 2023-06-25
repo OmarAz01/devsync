@@ -4,9 +4,11 @@ import React, { useEffect, useState } from 'react';
 const FilterBy = ({ filterBy, updateFilterBy }) => {
   return (
     <div className="flex flex-row justify-end border items-center shadow-sm border-zinc-700 rounded-sm mb-4 py-2 md:py-4 w-full">
-      <h4 className="md:text-sm text-xs absolute left-2">Filter</h4>
+      <h4 className="md:text-base text-sm absolute left-2">
+        Filter
+      </h4>
       <select
-        className="bg-inherit md:text-sm text-xs py-1 mx-2 leading-tight focus: hover:cursor-pointer rounded ease"
+        className="bg-inherit md:text-base text-sm py-1 mx-2 leading-tight focus: hover:cursor-pointer rounded ease"
         id="filter"
         value={filterBy.skillQuery}
         onChange={e =>
@@ -35,7 +37,7 @@ const FilterBy = ({ filterBy, updateFilterBy }) => {
         </option>
       </select>
       <select
-        className="bg-inherit md:text-sm text-xs mx-2 leading-tight focus: hover:cursor-pointer rounded ease"
+        className="bg-inherit md:text-base text-sm mx-2 leading-tight focus: hover:cursor-pointer rounded ease"
         id="filter"
         value={filterBy.levelQuery}
         onChange={e =>
