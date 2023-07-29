@@ -103,4 +103,30 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Override
+    public ResponseEntity<UserDTO> updateUserBio(Long id, String bio) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Object principal = authentication.getPrincipal();
+        if (principal instanceof UserEntity) {
+            if (!((UserEntity) principal).getUserId().equals(id)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
+
+        Optional<UserEntity> existingUser = userRepo.findById(id);
+        if (existingUser.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+        existingUser.get().setBio(bio);
+        try {
+            UserEntity userRes = userRepo.save(existingUser.get());
+            UserDTO userDTO = UserDTO.convertToDTO(userRes);
+            return ResponseEntity.status(HttpStatus.OK).body(userDTO);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
 }

@@ -28,4 +28,9 @@ public class UserController {
         return userService.updateUserImage(id, image);
     }
 
+    @PutMapping("/{id}/bio")
+    public ResponseEntity<UserDTO> updateUserBio(@PathVariable("id") Long id, @RequestBody String bio) {
+        return userService.updateUserBio(id, bio);
+    }
+
 }

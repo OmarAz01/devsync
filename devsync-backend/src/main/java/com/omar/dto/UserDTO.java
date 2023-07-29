@@ -14,6 +14,7 @@ public class UserDTO {
     private String email;
     private String username;
     private String imageUri;
+    private String bio;
     private String skill;
     private String level;
 
@@ -23,6 +24,7 @@ public class UserDTO {
                 user.getEmail(),
                 user.getUsername(),
                 user.getImageUri(),
+                user.getBio(),
                 user.getSkill(),
                 user.getLevel()
         );
@@ -36,6 +38,7 @@ public class UserDTO {
                     user.getEmail(),
                     user.getUsername(),
                     user.getImageUri(),
+                    user.getBio(),
                     user.getSkill(),
                     user.getLevel()
             );

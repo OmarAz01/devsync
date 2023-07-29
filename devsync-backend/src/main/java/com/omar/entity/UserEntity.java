@@ -4,6 +4,7 @@ import com.omar.dto.UserDTO;
 import com.omar.security.entity.RefreshTokenEntity;
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.CollectionId;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,10 +20,14 @@ public class UserEntity implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
+    @Column(length = 10)
     private String username;
+    @Column(length = 50)
     private String email;
     private String password;
     private String imageUri;
+    @Column(columnDefinition = "TEXT")
+    private String bio;
     private String skill;
     private String level;
     @Enumerated(EnumType.STRING)
