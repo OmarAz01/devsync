@@ -249,11 +249,20 @@ const GetPosts = ({ createAlert }) => {
               className="pt-4 pb-6 border rounded-lg shadow-md border-black my-1 md:my-2 min-w-full
             max-w-screen-md bg-zinc-800 flex flex-row">
               <div className="flex flex-col text-center items-center min-w-fit md:w-40">
-                <Image
-                  src={pp1Image}
-                  alt="image"
-                  className="md:w-20 md:h-20 w-12 h-12 mx-4 mb-2 rounded-full"
-                />
+                {post.imageUri ? (
+                  <Image
+                    src={post.imageUri}
+                    alt="image"
+                    className="md:w-20 md:h-20 w-12 h-12 mx-4 mb-2 rounded-full"
+                  />
+                ) : (
+                  <Image
+                    src={pp1Image}
+                    alt="image"
+                    className="md:w-20 md:h-20 w-12 h-12 mx-4 mb-2 rounded-full"
+                  />
+                )}
+
                 <h4 className="md:text-base text-sm">
                   {' '}
                   {'@' + post.username}{' '}

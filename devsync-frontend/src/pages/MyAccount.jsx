@@ -10,7 +10,7 @@ const MyAccount = () => {
   const [user, setUser] = useState({});
   const [prompt, setPrompt] = useState('');
   const [promptImg, setPromptImg] = useState('');
-  const [currView, setCurrView] = useState('profile');
+  const [currView, setCurrView] = useState('Profile');
   const currUser = JSON.parse(localStorage.getItem('user'));
 
   useEffect(() => {
@@ -124,34 +124,50 @@ const MyAccount = () => {
               className="md:w-64 md:h-64 w-44 h-44 mx-4 mb-2 mt-12 rounded-full"
             />
           )}
-          <h4 className="text-2xl font-bold text-neutral-100 mt-4">
-            {'@'}
-            {user.username}
-          </h4>
+          <div className="flex flex-row items-center mt-4">
+            <h4 className="md:text-2xl text-xl font-bold text-neutral-100">
+              {'@'}
+              {user.username}
+            </h4>
+            <h4 className="md:text-lg text-base text-zinc-400 pt-1 mx-2">
+              {`- ${user.level}`}
+            </h4>
+          </div>
+
           <div className="flex flex-row md:w-1/2 w-4/5 justify-between items-center mt-10">
             <h4
-              className="text-xl text-neutral-100 hover:text-zinc-500 hover:cursor-pointer"
+              className={`md:text-xl text-lg text-neutral-100 hover:text-zinc-500 hover:cursor-pointer ${
+                currView === 'Profile' &&
+                'border-b-2 border-zinc-500'
+              }}`}
               onClick={e => setCurrView('Profile')}>
               Profile
             </h4>
             <h4
-              className="text-xl text-neutral-100 hover:text-zinc-500 hover:cursor-pointer"
+              className={`md:text-xl text-lg text-neutral-100 hover:text-zinc-500 hover:cursor-pointer ${
+                currView === 'Posts' && 'border-b-2 border-zinc-500'
+              }}`}
               onClick={e => setCurrView('Posts')}>
               Posts
             </h4>
             <h4
-              className="text-xl text-neutral-100 hover:text-zinc-500 hover:cursor-pointer"
+              className={`md:text-xl text-lg text-neutral-100 hover:text-zinc-500 hover:cursor-pointer ${
+                currView === 'Security' &&
+                'border-b-2 border-zinc-500'
+              }}`}
               onClick={e => setCurrView('Security')}>
               Security
             </h4>
           </div>
-          {currView === 'Profile' ? (
-            <ProfileView />
-          ) : currView === 'Posts' ? (
-            <PostsView />
-          ) : currView === 'Security' ? (
-            <SecurityView />
-          ) : null}
+          <div className="w-full flex flex-col p-4 rounded-md mt-10 border-2 border-white">
+            {currView === 'Profile' ? (
+              <ProfileView user={user} />
+            ) : currView === 'Posts' ? (
+              <PostsView user={user} />
+            ) : currView === 'Security' ? (
+              <SecurityView user={user} />
+            ) : null}
+          </div>
         </div>
       </div>
     </>

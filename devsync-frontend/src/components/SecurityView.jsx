@@ -1,6 +1,6 @@
 import React from 'react';
 
-const SecurityView = () => {
+const SecurityView = ({ user }) => {
   return <div>SecurityView</div>;
 };
 
