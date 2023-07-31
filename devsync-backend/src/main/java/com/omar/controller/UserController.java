@@ -30,6 +30,7 @@ public class UserController {
 
     @PutMapping("/{id}/bio")
     public ResponseEntity<UserDTO> updateUserBio(@PathVariable("id") Long id, @RequestBody String bio) {
+        System.out.println("bio: " + bio);
         return userService.updateUserBio(id, bio);
     }
 

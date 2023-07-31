@@ -11,7 +11,7 @@ public interface PostService {
 
     ResponseEntity<Long> deletePost(Long postId);
 
-    ResponseEntity<PostDTO> updatePost(Long postId, PostEntity post);
+    ResponseEntity<PostDTO> updatePost(Long postId, PostDTO post);
 
     ResponseEntity<PostDTO> findPost(Long postId);
 

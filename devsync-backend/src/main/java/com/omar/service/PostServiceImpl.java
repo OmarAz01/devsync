@@ -50,11 +50,11 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public ResponseEntity<PostDTO> updatePost(Long id, PostEntity post) {
+    public ResponseEntity<PostDTO> updatePost(Long id, PostDTO post) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Object principal = authentication.getPrincipal();
         if (principal instanceof UserEntity) {
-            if (!((UserEntity) principal).getUserId().equals(post.getUser().getUserId())) {
+            if (!((UserEntity) principal).getUserId().equals(post.getUserId())) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
             }
         } else {
