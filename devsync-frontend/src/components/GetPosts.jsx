@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import axios, { AxiosHeaders } from 'axios';
 import Image from 'react-bootstrap/Image';
 import pp1Image from '../assets/pp1.jpg';
 import FilterBy from './FilterBy';
@@ -89,9 +89,13 @@ const GetPosts = ({ createAlert }) => {
   };
 
   const handleDelete = async postId => {
+    const confirmed = window.confirm('Are you sure you want to delete this post?');
+    if (!confirmed) {
+      return;
+    }
     try {
       await axios.delete(`${BASE_URL}/api/posts/delete/${postId}`, {
-        headers: { Authorization: `Bearer ${currUser.token}` }
+        headers: { Authorization: `Bearer ${currUser.jwt}` }
       });
       setPosts(
         posts.filter(post => {
@@ -144,7 +148,7 @@ const GetPosts = ({ createAlert }) => {
         .put(
           BASE_URL + '/api/posts/update/' + originalPost.postId,
           editedPost,
-          { headers: { Authorization: `Bearer ${currUser.token}` } }
+          { headers: { Authorization: `Bearer ${currUser.jwt}`, 'Content-Type': 'json' } }
         )
         .then(() => {
           setEditMode({ ...editMode, edit: false });

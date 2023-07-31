@@ -32,7 +32,7 @@ const SubmitPost = ({ setShow, createAlert }) => {
 
       axios
         .post(`${BASE_URL}/api/posts/create`, updatedPost, {
-          headers: { Authorization: `Bearer ${currUser.token}` }
+          headers: { Authorization: `Bearer ${currUser.jwt}`, 'Content-Type': 'application/json' }
         })
         .then(response => {
           if (response.status !== 201) {

@@ -92,13 +92,13 @@ const MyAccount = () => {
               )}
               <form
                 className="flex flex-col justify-center items-center"
-                onSubmit={handlePromptSubmit}>
+                onSubmit={handlePromptGenerate}>
                 <input
                   type="text"
                   value={prompt}
                   onChange={e => setPrompt(e.target.value)}
                   className="flex w-72 p-2 bg-neutral-900 text-m leading-tight mt-4 focus:outline-none focus:shadow-outline rounded"
-                  placeholder="Type a prompt here..."
+                  placeholder="Type a prompt to create an avatar..."
                 />
                 <div className="flex flex-row justify-center items-center">
                   <button
@@ -111,7 +111,7 @@ const MyAccount = () => {
                   <button
                     className="bg-zinc-900 mt-4 py-1
                   px-4 hover:bg-green-600 rounded-md w-24 border-black border shadow-sm md:text-base text-sm"
-                    type="submit">
+                    type="button" onClick={handlePromptSubmit}>
                     Submit
                   </button>
                 </div>

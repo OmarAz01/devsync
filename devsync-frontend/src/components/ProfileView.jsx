@@ -21,17 +21,20 @@ const ProfileView = ({ user }) => {
 
   const handleEditBio = () => {
     if (editBio === false) {
+      setBio(user.bio);
       setEditBio(true);
       return;
     }
     if (editBio === true) {
-      if (bio === user.bio) {
+      if (bio === user.bio || bio === '' || bio === null) {
+        setBio(user.bio);
         setEditBio(false);
         return;
       }
       axios
         .put(BASE_URL + `/api/user/${currUser.userId}/bio`, bio, {
-          headers: { Authorization: `Bearer ${currUser.jwt}` }
+          headers: { Authorization: `Bearer ${currUser.jwt}`, 'Content-Type': 'text/plain' }
+
         })
         .then(res => {
           user.bio = bio;
