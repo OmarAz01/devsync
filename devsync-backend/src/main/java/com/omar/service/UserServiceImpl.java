@@ -105,16 +105,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ResponseEntity<UserDTO> updateUserBio(Long id, String bio) {
-        System.out.println("Updating user bio");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Object principal = authentication.getPrincipal();
         if (principal instanceof UserEntity) {
             if (!((UserEntity) principal).getUserId().equals(id)) {
-                System.out.println("Unauthorized");
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
             }
         } else {
-            System.out.println("Unauthorized because principal is not a user");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
 
@@ -124,7 +121,31 @@ public class UserServiceImpl implements UserService {
         }
         existingUser.get().setBio(bio);
         try {
-            System.out.println("Saving user");
+            UserEntity userRes = userRepo.save(existingUser.get());
+            UserDTO userDTO = UserDTO.convertToDTO(userRes);
+            return ResponseEntity.status(HttpStatus.OK).body(userDTO);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    @Override
+    public ResponseEntity<UserDTO> updateUserLevel(Long id, String level) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Object principal = authentication.getPrincipal();
+        if (principal instanceof UserEntity) {
+            if (!((UserEntity) principal).getUserId().equals(id)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
+        Optional<UserEntity> existingUser = userRepo.findById(id);
+        if (existingUser.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+        existingUser.get().setLevel(level);
+        try {
             UserEntity userRes = userRepo.save(existingUser.get());
             UserDTO userDTO = UserDTO.convertToDTO(userRes);
             return ResponseEntity.status(HttpStatus.OK).body(userDTO);

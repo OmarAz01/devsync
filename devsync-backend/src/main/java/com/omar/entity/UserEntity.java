@@ -3,6 +3,7 @@ package com.omar.entity;
 import com.omar.dto.UserDTO;
 import com.omar.security.entity.RefreshTokenEntity;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Data;
 import org.hibernate.annotations.CollectionId;
 import org.springframework.security.core.GrantedAuthority;
@@ -28,6 +29,7 @@ public class UserEntity implements UserDetails {
     private String imageUri;
     @Column(columnDefinition = "TEXT")
     private String bio;
+    @Column(columnDefinition = "default 'Beginner'")
     private String skill;
     private String level;
     @Enumerated(EnumType.STRING)

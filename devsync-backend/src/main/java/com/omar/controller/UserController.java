@@ -34,4 +34,9 @@ public class UserController {
         return userService.updateUserBio(id, bio);
     }
 
+    @PutMapping("/{id}/level")
+    public ResponseEntity<UserDTO> updateUserLevel(@PathVariable("id") Long id, @RequestBody String level) {
+        return userService.updateUserLevel(id, level);
+    }
+
 }
