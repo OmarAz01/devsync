@@ -1,6 +1,6 @@
 import React from 'react';
 
-const PostsView = ({ user }) => {
+const PostsView = ({ user, createAlert }) => {
   return <div>PostsView</div>;
 };
 

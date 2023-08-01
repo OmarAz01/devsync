@@ -1,23 +1,16 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 
-const ProfileView = ({ user }) => {
+const ProfileView = ({ user, createAlert }) => {
   const currUser = JSON.parse(localStorage.getItem('user'));
   const BASE_URL = 'http://localhost:8080';
   const [editBio, setEditBio] = useState(false);
   const [bio, setBio] = useState(user.bio || '');
+  const [level, setLevel] = useState('');
 
   useEffect(() => {
-    // if (!currUser) {
-    //   window.location.href = '/login';
-    // }
-    // if (user === undefined || user === null) {
-    //   window.location.href = '/login';
-    // }
-    // if (user.userId !== currUser.userId) {
-    //   window.location.href = '/login';
-    // }
-  }, []);
+    setLevel(user.level);
+  }, [user]);
 
   const handleEditBio = () => {
     if (editBio === false) {
@@ -38,13 +31,34 @@ const ProfileView = ({ user }) => {
         })
         .then(res => {
           user.bio = bio;
+          createAlert('Bio updated!', 'success');
           setEditBio(false);
         })
         .catch(err => {
+          createAlert('Bio update failed!', 'error');
           console.log(err);
         });
     }
   };
+
+  const handleLevelChange = () => {
+    if (level === user.level || level === '' || level === null) {
+      return;
+    }
+    axios
+    .put(BASE_URL + `/api/user/${currUser.userId}/level`, level, {
+      headers: { Authorization: `Bearer ${currUser.jwt}`, 'Content-Type': 'text/plain' }
+    })
+    .then(res => {
+      user.level = level;
+      createAlert('Level updated!', 'success');
+      setLevel(level);
+    })
+    .catch(err => {
+      createAlert('Level update failed!', 'error');
+      console.log(err);
+    });
+  }
 
   return (
     <>
@@ -81,7 +95,7 @@ const ProfileView = ({ user }) => {
           </button>
         </div>
 
-        <div className="flex flex-row w-full flex-wrap justify-start items-center mt-4">
+        <div className="flex flex-row w-full flex-wrap justify-start items-center mt-4 h-24">
           {user.skill !== undefined && user.skill !== null
             ? user.skill.split(', ').map(skill => (
                 <h4
@@ -93,6 +107,24 @@ const ProfileView = ({ user }) => {
               ))
             : null}
         </div>
+        <div className="flex flex-row border-b justify-between pb-2 mt-4">
+          <h4 className="md:text-xl text-lg text-left ">Level</h4>
+          <button onClick={handleLevelChange} className="bg-zinc-700 rounded-md px-4 hover:cursor-pointer py-1 hover:bg-blue-500">
+            Save
+          </button>
+        </div>
+        <label htmlFor='Beginner' className='text-left mt-4 text-base md:text-lg'>
+        <input onChange={() => setLevel('Beginner')} type='radio' name='level' value='Beginner' className='mt-4 mr-2' checked={level === 'Beginner'} /> 
+        Beginner - If you are new to coding and are building your first project
+        </label>
+        <label htmlFor='Beginner' className='text-left mt-4 text-base md:text-lg'>
+        <input onChange={() => setLevel('Intermediate')} type='radio' name='level' value='Intermediate' className='mt-4 mr-2' checked={level === 'Intermediate'} /> 
+        Intermediate - If you have some experience with coding and building projects
+        </label>
+        <label htmlFor='Beginner' className='text-left mt-4 text-base md:text-lg'>
+        <input onChange={() => setLevel('Advanced')} type='radio' name='level' value='Advanced' className='mt-4 mr-2' checked={level === 'Advanced'} /> 
+        Advanced - If you have a lot of experience with coding or have experience in the field and you're looking to build a complex project
+        </label>
       </div>
     </>
   );

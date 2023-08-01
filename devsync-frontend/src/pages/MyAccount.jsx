@@ -5,6 +5,8 @@ import pp1Image from '../assets/pp1.jpg';
 import PostsView from '../components/PostsView';
 import ProfileView from '../components/ProfileView';
 import SecurityView from '../components/SecurityView';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const MyAccount = () => {
   const [user, setUser] = useState({});
@@ -27,6 +29,14 @@ const MyAccount = () => {
         });
     }
   }, []);
+
+  const createAlert = (title, variant) => {
+    if (variant === 'success') {
+      return toast.success(title);
+    } else {
+      return toast.error(title);
+    }
+  };
 
   const handlePromptGenerate = e => {
     e.preventDefault();
@@ -161,15 +171,27 @@ const MyAccount = () => {
           </div>
           <div className="w-full flex flex-col p-4 rounded-md mt-10 border-2 border-white">
             {currView === 'Profile' ? (
-              <ProfileView user={user} />
+              <ProfileView user={user} createAlert={createAlert} />
             ) : currView === 'Posts' ? (
-              <PostsView user={user} />
+              <PostsView user={user} createAlert={createAlert} />
             ) : currView === 'Security' ? (
-              <SecurityView user={user} />
+              <SecurityView user={user} createAlert={createAlert} />
             ) : null}
           </div>
         </div>
       </div>
+      <ToastContainer
+        position="top-center"
+        autoClose={5000}
+        hideProgressBar={true}
+        newestOnTop={true}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
     </>
   );
 };
