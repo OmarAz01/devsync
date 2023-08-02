@@ -64,7 +64,7 @@ const Feed = () => {
                   Browse Posts
                 </h4>
               </div>
-              <GetPosts createAlert={createAlert} />
+              <GetPosts createAlert={createAlert} userId={-1} />
             </div>
             <div className="border-2 w-full max-w-sm hidden lg:flex p-4 mx-4">
               <h4>Messaging</h4>

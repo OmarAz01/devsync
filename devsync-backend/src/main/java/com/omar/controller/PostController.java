@@ -17,14 +17,14 @@ public class PostController {
 
     private final PostService postService;
 
-    @PostMapping("/all")
-    public ResponseEntity<List<PostDTO>> getAllPostsBefore(@RequestBody String date) {
+    @GetMapping("/all/{date}")
+    public ResponseEntity<List<PostDTO>> getAllPostsBefore(@PathVariable("date") String date) {
         return postService.findAllPostsBefore(date);
     }
 
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<PostDTO>> getPostsByUserId(@PathVariable("userId") Long userId) {
-        return postService.findByUserId(userId);
+    @GetMapping("/user/{userId}/{date}")
+    public ResponseEntity<List<PostDTO>> getPostsByUserId(@PathVariable("userId") Long userId, @PathVariable("date") String date) {
+        return postService.findByUserId(userId, date);
     }
 
     @GetMapping("/{id}")

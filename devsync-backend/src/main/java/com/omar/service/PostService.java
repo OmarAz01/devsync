@@ -17,7 +17,7 @@ public interface PostService {
 
     ResponseEntity<PostDTO> createPost(PostEntity post);
 
-    ResponseEntity<List<PostDTO>> findByUserId(Long userId);
+    ResponseEntity<List<PostDTO>> findByUserId(Long userId, String date);
 
     ResponseEntity<List<PostDTO>> findAllPostsBefore(String date);
 

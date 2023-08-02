@@ -22,4 +22,6 @@ public interface UserService {
     ResponseEntity<UserDTO> updateUserBio(Long id, String bio);
 
     ResponseEntity<UserDTO> updateUserLevel(Long id, String level);
+
+    ResponseEntity<UserDTO> updateUserSkill(Long id, String skill);
 }

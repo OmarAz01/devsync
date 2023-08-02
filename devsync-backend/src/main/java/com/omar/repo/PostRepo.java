@@ -14,6 +14,9 @@ public interface PostRepo extends JpaRepository<PostEntity, Long> {
     @Query(value = "SELECT * FROM posts WHERE date_created < :date ORDER BY post_id DESC LIMIT 10", nativeQuery = true)
     Optional<List<PostEntity>> findAllPostsBefore(@Param("date") String date);
 
+    @Query(value = "SELECT * FROM posts WHERE date_created < :date AND user_id = :userId ORDER BY post_id DESC LIMIT 10", nativeQuery = true)
+    Optional<List<PostEntity>> findByUserId(@Param("userId") Long userId, @Param("date") String date);
+
     @Query(value = "SELECT * FROM posts WHERE user_id = :userId", nativeQuery = true)
     Optional<List<PostEntity>> findByUserId(@Param("userId") Long userId);
 

@@ -40,6 +40,10 @@ const SubmitPost = ({ setShow, createAlert }) => {
             return;
           }
           setShow(false);
+          setPost({content: '',
+          levelNeeded: ['Beginner'],
+          skillNeeded: ['Web Dev'],
+          dateCreated: ''});
           createAlert('Post created successfully', 'success');
         })
         .catch(error => {

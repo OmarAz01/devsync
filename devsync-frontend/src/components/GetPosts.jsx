@@ -4,7 +4,7 @@ import Image from 'react-bootstrap/Image';
 import pp1Image from '../assets/pp1.jpg';
 import FilterBy from './FilterBy';
 
-const GetPosts = ({ createAlert }) => {
+const GetPosts = ({ createAlert, userId }) => {
   const BASE_URL = 'http://localhost:8080';
   const [posts, setPosts] = useState([]);
   const [lastPost, setLastPost] = useState(false);
@@ -31,12 +31,41 @@ const GetPosts = ({ createAlert }) => {
     setFilterBy(filter);
   };
 
+  console.log(lastPostDate);
+
   const getPosts = async () => {
+
+    if (userId != -1) {
+      try {
+        const response = await axios.get(
+          `${BASE_URL}/api/posts/user/${userId}/${new Date().toISOString().slice(0, 19).replace('T', ' ')}`
+        );
+        if (response.data.length < 10) {
+          setLastPost(true);
+        }
+        if (response.status === 200) {
+          setPosts(response.data);
+          setLastPostDate(
+            response.data[response.data.length - 1].dateCreated
+          );
+        }
+      } catch (error) {
+        if (error.response && error.response.status === 404) {
+          setPosts([]);
+          setLastPost(true);
+          console.log('No posts found');
+        } else {
+          console.log(error);
+        }
+      }
+      return;
+
+    }
+
     if (filterBy.skillQuery === '' && filterBy.levelQuery === '') {
       try {
-        const response = await axios.post(
-          `${BASE_URL}/api/posts/all`,
-          new Date().toISOString().slice(0, 19).replace('T', ' ')
+        const response = await axios.get(
+          `${BASE_URL}/api/posts/all/${new Date().toISOString().slice(0, 19).replace('T', ' ')}`
         );
         if (response.data.length < 10) {
           setLastPost(true);
@@ -94,8 +123,8 @@ const GetPosts = ({ createAlert }) => {
       return;
     }
     try {
-      await axios.delete(`${BASE_URL}/api/posts/delete/${postId}`, {
-        headers: { Authorization: `Bearer ${currUser.jwt}` }
+      await axios.delete(`${BASE_URL}/api/posts/${postId}`, {
+        headers: { Authorization: `Bearer ${currUser.jwt}`}
       });
       setPosts(
         posts.filter(post => {
@@ -109,12 +138,13 @@ const GetPosts = ({ createAlert }) => {
       console.log(error);
     }
 
-    try {
-      const response = await axios.get(`${BASE_URL}/api/posts/all`);
-      setPosts(response.data);
-    } catch (error) {
-      console.log(error);
-    }
+    
+    // try {
+    //   const response = await axios.get(`${BASE_URL}/api/posts/all`);
+    //   setPosts(response.data);
+    // } catch (error) {
+    //   console.log(error);
+    // }
   };
 
   const formateTime = minutes => {
@@ -146,11 +176,11 @@ const GetPosts = ({ createAlert }) => {
       };
       axios
         .put(
-          BASE_URL + '/api/posts/update/' + originalPost.postId,
+          BASE_URL + `/api/posts/update/${originalPost.postId}`,
           editedPost,
-          { headers: { Authorization: `Bearer ${currUser.jwt}`, 'Content-Type': 'json' } }
+          { headers: { Authorization: `Bearer ${currUser.jwt}`, 'Content-Type': 'application/json' } }
         )
-        .then(() => {
+        .then(res => {
           setEditMode({ ...editMode, edit: false });
           // Update the post in the posts array
           setPosts(prevPosts => {
@@ -189,11 +219,31 @@ const GetPosts = ({ createAlert }) => {
   };
 
   const handleLoadMore = async () => {
+
+    if (userId != -1) {
+      try {
+        const response = await axios.get(
+          `${BASE_URL}/api/posts/user/${userId}/${lastPostDate}`
+        );
+        if (response.data.length < 10) {
+          setLastPost(true);
+        }
+        if (response.status === 200) {
+          setPosts(prevPosts => [...prevPosts, ...response.data]);
+          setLastPostDate(
+            response.data[response.data.length - 1].dateCreated
+          );
+        }
+      } catch (error) {
+        console.log(error);
+      }
+      return;
+    }
+
     if (filterBy.skillQuery === '' && filterBy.levelQuery === '') {
       try {
-        const response = await axios.post(
-          `${BASE_URL}/api/posts/all`,
-          lastPostDate
+        const response = await axios.get(
+          `${BASE_URL}/api/posts/all/${lastPostDate}`
         );
         if (response.data.length < 10) {
           setLastPost(true);
@@ -233,10 +283,13 @@ const GetPosts = ({ createAlert }) => {
 
   return (
     <>
-      <FilterBy
+      {userId === -1 && (
+        <FilterBy
         updateFilterBy={updateFilterBy}
         filterBy={filterBy}
       />
+      )}
+      
 
       {posts.length > 0 &&
         posts.map(post => {

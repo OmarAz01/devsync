@@ -169,7 +169,7 @@ const MyAccount = () => {
               Security
             </h4>
           </div>
-          <div className="w-full flex flex-col p-4 rounded-md mt-10 border-2 border-white">
+          <div className="w-full flex flex-col p-4 rounded-md mt-10 border border-zinc-600">
             {currView === 'Profile' ? (
               <ProfileView user={user} createAlert={createAlert} />
             ) : currView === 'Posts' ? (

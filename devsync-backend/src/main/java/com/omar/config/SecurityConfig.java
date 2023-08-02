@@ -26,9 +26,9 @@ public class SecurityConfig {
         return http.cors(Customizer.withDefaults()).csrf(csrf -> csrf.disable()).authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/user/userforpost", "").permitAll()
                         .requestMatchers("/api/user/*/bio").permitAll()
-                        .requestMatchers("/api/posts/all").permitAll()
+                        .requestMatchers("/api/posts/all/{date}").permitAll()
                         .requestMatchers("/api/posts/{id}").permitAll()
-                        .requestMatchers("/api/posts/user/{id}").permitAll()
+                        .requestMatchers("/api/posts/user/{id}/{date}").permitAll()
                         .requestMatchers("/api/posts/query").permitAll()
                         .requestMatchers("/api/user/{id}").permitAll()
                         .requestMatchers("/api/auth/register").permitAll()

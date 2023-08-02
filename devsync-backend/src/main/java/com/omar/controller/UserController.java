@@ -39,4 +39,9 @@ public class UserController {
         return userService.updateUserLevel(id, level);
     }
 
+    @PutMapping("/{id}/skill")
+    public ResponseEntity<UserDTO> updateUserSkill(@PathVariable("id") Long id, @RequestBody String skill) {
+        return userService.updateUserSkill(id, skill);
+    }
+
 }

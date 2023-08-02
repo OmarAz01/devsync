@@ -102,24 +102,38 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public ResponseEntity<List<PostDTO>> findByUserId(Long userId) {
+    public ResponseEntity<List<PostDTO>> findByUserId(Long userId, String date) {
         List<PostDTO> postsDTO = new ArrayList<>();
-        Optional<List<PostEntity>> posts = postRepo.findByUserId(userId);
-        if (posts.isEmpty() || posts.get().isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        String newDate = date.replace("%20", " ");
+        String decodedDateTime;
+        try {
+            decodedDateTime = URLDecoder.decode(newDate, StandardCharsets.UTF_8.toString());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
-        for (PostEntity post : posts.get()) {
-            postsDTO.add(PostDTO.convertToDTO(post));
+        try {
+            Optional<List<PostEntity>> posts = postRepo.findByUserId(userId, decodedDateTime.substring(0, 19));
+            if (posts.isEmpty() || posts.get().isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            }
+            for (PostEntity post : posts.get()) {
+                postsDTO.add(PostDTO.convertToDTO(post));
+            }
+            return ResponseEntity.status(HttpStatus.OK).body(postsDTO);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
-        return ResponseEntity.status(HttpStatus.OK).body(postsDTO);
     }
 
     @Override
     public ResponseEntity<List<PostDTO>> findAllPostsBefore(String date) {
         List<PostDTO> postsDTO = new ArrayList<>();
+        String newDate = date.replace("%20", " ");
+        System.out.println(newDate);
         String decodedDateTime;
         try {
-            decodedDateTime = URLDecoder.decode(date, StandardCharsets.UTF_8.toString());
+            decodedDateTime = URLDecoder.decode(newDate, StandardCharsets.UTF_8.toString());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
