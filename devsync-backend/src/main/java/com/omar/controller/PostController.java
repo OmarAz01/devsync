@@ -47,9 +47,9 @@ public class PostController {
         return postService.deletePost(id);
     }
 
-    @PostMapping("/query")
-    public ResponseEntity<List<PostDTO>> getPostsByQuery(@RequestBody QueryDTO query) {
-        return postService.findBySkillAndLevel(query);
+    @GetMapping("/query/{level}/{skill}/{date}")
+    public ResponseEntity<List<PostDTO>> getPostsByQuery(@PathVariable("level") String level, @PathVariable("skill") String skill, @PathVariable("date") String date) {
+        return postService.findBySkillAndLevel(level, skill, date);
     }
 
 }

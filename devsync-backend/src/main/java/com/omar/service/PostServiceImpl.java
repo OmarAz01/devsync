@@ -154,16 +154,25 @@ public class PostServiceImpl implements PostService {
 
 
     @Override
-    public ResponseEntity<List<PostDTO>> findBySkillAndLevel(QueryDTO query) {
+    public ResponseEntity<List<PostDTO>> findBySkillAndLevel(String level, String skill, String date) {
         List<PostDTO> postsDTO = new ArrayList<>();
+        String newDate = date.replace("%20", " ");
+        String newSkill = skill.replace("%20", " ");
+        String newLevel = level.replace("%20", " ");
         String decodedDateTime;
+        if (newSkill.equals("null")) {
+            newSkill = "";
+        }
+        if (newLevel.equals("null")) {
+            newLevel = "";
+        }
         try {
-            decodedDateTime = URLDecoder.decode(query.getDate(), StandardCharsets.UTF_8.toString());
+            decodedDateTime = URLDecoder.decode(newDate, StandardCharsets.UTF_8.toString());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
         try {
-            Optional<List<PostEntity>> posts = postRepo.findBySkillAndLevel(query.getSkillQuery(), query.getLevelQuery(), decodedDateTime.substring(0, 19));
+            Optional<List<PostEntity>> posts = postRepo.findBySkillAndLevel(newSkill, newLevel, decodedDateTime.substring(0, 19));
             if (posts.get().isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
             }

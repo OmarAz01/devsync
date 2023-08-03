@@ -21,6 +21,6 @@ public interface PostService {
 
     ResponseEntity<List<PostDTO>> findAllPostsBefore(String date);
 
-    ResponseEntity<List<PostDTO>> findBySkillAndLevel(QueryDTO query);
+    ResponseEntity<List<PostDTO>> findBySkillAndLevel(String level, String skill, String date);
 
 }
