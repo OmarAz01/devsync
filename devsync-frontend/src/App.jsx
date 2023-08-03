@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   BrowserRouter,
   Link,
@@ -13,6 +13,8 @@ const App = () => {
   const BASE_URL = 'http://localhost:8080';
   const [loggedIn, setLoggedIn] = useState(false);
   const [open, setOpen] = useState(false);
+  const refOpen = useRef(null);
+
   useEffect(() => {
     const currUser = JSON.parse(localStorage.getItem('user'));
     if (currUser) {
@@ -51,6 +53,17 @@ const App = () => {
     }
   }, []);
 
+  useEffect(() => {
+    document.addEventListener('click', handleClickOutside, true);
+
+  }, [])
+
+  const handleClickOutside = (e) => {
+    if (refOpen.current && !refOpen.current.contains(e.target)) {
+      setOpen(false);
+    }
+  }
+
   return (
     <BrowserRouter>
       <header className="flex flex-row justify-end md:text-lg">
@@ -70,7 +83,8 @@ const App = () => {
           <>
             <h4
               className="p-4 hover:text-zinc-500 hover:cursor-pointer"
-              onClick={e => setOpen(!open)}>
+              onClick={() => setOpen(!open)}
+              ref={refOpen}>
               My Account
             </h4>
             <div

@@ -31,9 +31,10 @@ const GetPosts = ({ createAlert, userId }) => {
     setFilterBy(filter);
   };
 
-  console.log(lastPostDate);
 
   const getPosts = async () => {
+    // set the last post to false every time we get new posts then check if the response is less than 10
+    setLastPost(false);
 
     if (userId != -1) {
       try {
@@ -53,7 +54,6 @@ const GetPosts = ({ createAlert, userId }) => {
         if (error.response && error.response.status === 404) {
           setPosts([]);
           setLastPost(true);
-          console.log('No posts found');
         } else {
           console.log(error);
         }
@@ -79,22 +79,17 @@ const GetPosts = ({ createAlert, userId }) => {
       } catch (error) {
         if (error.response && error.response.status === 404) {
           setLastPost(true);
-          console.log('No posts found');
         } else {
           console.log(error);
         }
       }
     } else {
+      const queryLevel = filterBy.levelQuery === '' ? 'null' : filterBy.levelQuery;
+      const querySkill = filterBy.skillQuery === '' ? 'null' : filterBy.skillQuery;
+      const queryDate = new Date().toISOString().slice(0, 19).replace('T', ' ')
       try {
-        const response = await axios.post(
-          `${BASE_URL}/api/posts/query`,
-          {
-            ...filterBy,
-            date: new Date()
-              .toISOString()
-              .slice(0, 19)
-              .replace('T', ' ')
-          }
+        const response = await axios.get(
+          `${BASE_URL}/api/posts/query/${queryLevel}/${querySkill}/${queryDate}`
         );
         if (response.data.length < 10) {
           setLastPost(true);
@@ -109,7 +104,6 @@ const GetPosts = ({ createAlert, userId }) => {
         if (error.response && error.response.status === 404) {
           setPosts([]);
           setLastPost(true);
-          console.log('No posts found');
         } else {
           console.log(error);
         }
@@ -219,7 +213,10 @@ const GetPosts = ({ createAlert, userId }) => {
   };
 
   const handleLoadMore = async () => {
+    // set last post to false as default every time load more is clicked
+    setLastPost(false);
 
+    // if userId is not -1, then we are on a user profile page
     if (userId != -1) {
       try {
         const response = await axios.get(
@@ -258,13 +255,11 @@ const GetPosts = ({ createAlert, userId }) => {
         console.log(error);
       }
     } else {
+      const queryLevel = filterBy.levelQuery === '' ? 'null' : filterBy.levelQuery;
+      const querySkill = filterBy.skillQuery === '' ? 'null' : filterBy.skillQuery;
       try {
-        const response = await axios.post(
-          `${BASE_URL}/api/posts/query`,
-          {
-            ...filterBy,
-            date: lastPostDate
-          }
+        const response = await axios.get(
+          `${BASE_URL}/api/posts/query/${queryLevel}/${querySkill}/${lastPostDate}`
         );
         if (response.data.length < 10) {
           setLastPost(true);
@@ -403,13 +398,15 @@ const GetPosts = ({ createAlert, userId }) => {
         })}
 
       {!lastPost ? (
-        <button
-          className="hover:text-zinc-500"
-          onClick={handleLoadMore}>
-          Load More...
-        </button>
+        <div className="flex justify-center mt-4">
+          <button
+            className="hover:text-zinc-500 flex justify-center"
+            onClick={handleLoadMore}>
+            Load More...
+          </button>
+        </div>
       ) : (
-        <h4 className="text-sm md:text-base text-center py-4">
+        <h4 className="text-sm md:text-base text-center pt-4">
           Nothing more to show
         </h4>
       )}
