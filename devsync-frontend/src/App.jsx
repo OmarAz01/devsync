@@ -5,7 +5,13 @@ import {
   Route,
   Routes
 } from 'react-router-dom';
-import { SignIn, SignUp, MyAccount, Feed } from './pages/index';
+import {
+  SignIn,
+  SignUp,
+  MyAccount,
+  Feed,
+  UserProfile
+} from './pages/index';
 import axios from 'axios';
 import '../index.css';
 
@@ -55,14 +61,13 @@ const App = () => {
 
   useEffect(() => {
     document.addEventListener('click', handleClickOutside, true);
+  }, []);
 
-  }, [])
-
-  const handleClickOutside = (e) => {
+  const handleClickOutside = e => {
     if (refOpen.current && !refOpen.current.contains(e.target)) {
       setOpen(false);
     }
-  }
+  };
 
   return (
     <BrowserRouter>
@@ -123,6 +128,7 @@ const App = () => {
           <Route path="/signup" element={<SignUp />} />
           <Route path="/myaccount" element={<MyAccount />} />
           <Route path="/feed" element={<Feed />} />
+          <Route path="/:username" element={<UserProfile />} />
         </Routes>
         {/* <Routes>
           <Route path="/" element={<Home />} />
