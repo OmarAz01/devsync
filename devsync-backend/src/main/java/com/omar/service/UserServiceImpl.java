@@ -1,5 +1,7 @@
 package com.omar.service;
 
+import com.omar.dto.EmailChangeDTO;
+import com.omar.dto.PasswordChangeDTO;
 import com.omar.dto.UserDTO;
 import com.omar.entity.UserEntity;
 import com.omar.repo.UserRepo;
@@ -75,11 +77,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ResponseEntity<UserDTO> findByUsername(String username) {
-        Optional<UserDTO> user = userRepo.findByUsername(username);
+        Optional<UserEntity> user = userRepo.findByUsername(username);
         if (user.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
-        return ResponseEntity.status(HttpStatus.OK).body(user.get());
+        UserDTO userDTO = UserDTO.convertToDTO(user.get());
+        return ResponseEntity.status(HttpStatus.OK).body(userDTO);
     }
 
     @Override
@@ -174,6 +177,67 @@ public class UserServiceImpl implements UserService {
             UserEntity userRes = userRepo.save(existingUser.get());
             UserDTO userDTO = UserDTO.convertToDTO(userRes);
             return ResponseEntity.status(HttpStatus.OK).body(userDTO);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    @Override
+    public ResponseEntity<String> changePassword(Long id, PasswordChangeDTO passwordChangeDTO) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Object principal = authentication.getPrincipal();
+        if (principal instanceof UserEntity) {
+            if (!((UserEntity) principal).getUserId().equals(id)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
+        Optional<UserEntity> existingUser = userRepo.findById(id);
+        if (existingUser.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+        String oldPassword = passwordChangeDTO.getOldPassword();
+        String newPassword = passwordChangeDTO.getNewPassword();
+        if (!passwordEncoder.encode(oldPassword).equals(existingUser.get().getPassword())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Old password is incorrect");
+        }
+        existingUser.get().setPassword(passwordEncoder.encode(newPassword));
+        try {
+            userRepo.save(existingUser.get());
+            return ResponseEntity.status(HttpStatus.OK).body("Password changed successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    @Override
+    public ResponseEntity<String> changeEmail(Long id, EmailChangeDTO emailChangeDTO) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Object principal = authentication.getPrincipal();
+        if (principal instanceof UserEntity) {
+            if (!((UserEntity) principal).getUserId().equals(id)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
+        Optional<UserEntity> existingUser = userRepo.findById(id);
+        if (existingUser.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+        String password = emailChangeDTO.getPassword();
+        String newEmail = emailChangeDTO.getEmail();
+        if (!passwordEncoder.encode(password).equals(existingUser.get().getPassword())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Password is incorrect");
+        }
+        if (userRepo.findByEmail(newEmail).isPresent()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email already exists");
+        }
+        existingUser.get().setEmail(newEmail);
+        try {
+            userRepo.save(existingUser.get());
+            return ResponseEntity.status(HttpStatus.OK).body("Email changed successfully");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }

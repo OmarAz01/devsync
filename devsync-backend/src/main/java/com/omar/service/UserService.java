@@ -1,5 +1,7 @@
 package com.omar.service;
 
+import com.omar.dto.EmailChangeDTO;
+import com.omar.dto.PasswordChangeDTO;
 import com.omar.dto.UserDTO;
 import com.omar.entity.UserEntity;
 import org.springframework.http.ResponseEntity;
@@ -24,4 +26,8 @@ public interface UserService {
     ResponseEntity<UserDTO> updateUserLevel(Long id, String level);
 
     ResponseEntity<UserDTO> updateUserSkill(Long id, String skill);
+
+    ResponseEntity<String> changePassword(Long id, PasswordChangeDTO passwordChangeDTO);
+
+    ResponseEntity<String> changeEmail(Long id, EmailChangeDTO emailChangeDTO);
 }

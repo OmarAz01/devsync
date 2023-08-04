@@ -24,13 +24,12 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.cors(Customizer.withDefaults()).csrf(csrf -> csrf.disable()).authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/user/userforpost", "").permitAll()
-                        .requestMatchers("/api/user/*/bio").permitAll()
+                        .requestMatchers("/api/user/{id}").permitAll()
+                        .requestMatchers("/api/user/profile/{username}").permitAll()
                         .requestMatchers("/api/posts/all/{date}").permitAll()
                         .requestMatchers("/api/posts/{id}").permitAll()
                         .requestMatchers("/api/posts/user/{id}/{date}").permitAll()
                         .requestMatchers("/api/posts/query/{level}/{skill}/{date}").permitAll()
-                        .requestMatchers("/api/user/{id}").permitAll()
                         .requestMatchers("/api/auth/register").permitAll()
                         .requestMatchers("/api/auth/authenticate").permitAll()
                         .anyRequest().authenticated())
