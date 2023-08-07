@@ -23,8 +23,8 @@ const FilterBy = ({ filterBy, updateFilterBy }) => {
         <option className="bg-zinc-900" value="Data Science">
           Data Science
         </option>
-        <option className="bg-zinc-900" value="UI/UX">
-          UI/UX
+        <option className="bg-zinc-900" value="UX">
+          UX
         </option>
         <option className="bg-zinc-900" value="Cyber Security">
           Cyber Security

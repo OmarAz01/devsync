@@ -32,7 +32,10 @@ const SubmitPost = ({ setShow, createAlert }) => {
 
       axios
         .post(`${BASE_URL}/api/posts/create`, updatedPost, {
-          headers: { Authorization: `Bearer ${currUser.jwt}`, 'Content-Type': 'application/json' }
+          headers: {
+            Authorization: `Bearer ${currUser.jwt}`,
+            'Content-Type': 'application/json'
+          }
         })
         .then(response => {
           if (response.status !== 201) {
@@ -40,10 +43,12 @@ const SubmitPost = ({ setShow, createAlert }) => {
             return;
           }
           setShow(false);
-          setPost({content: '',
-          levelNeeded: ['Beginner'],
-          skillNeeded: ['Web Dev'],
-          dateCreated: ''});
+          setPost({
+            content: '',
+            levelNeeded: ['Beginner'],
+            skillNeeded: ['Web Dev'],
+            dateCreated: ''
+          });
           createAlert('Post created successfully', 'success');
         })
         .catch(error => {
@@ -64,12 +69,12 @@ const SubmitPost = ({ setShow, createAlert }) => {
       <div className="flex flex-row justify-between md:mx-8 mx-4 max-w-xl">
         <button
           onClick={handlePost}
-          className="hover:bg-zinc-600 md:text-xl text-base h-fit py-1 border-2 border-black px-4 shadow-lg rounded-md my-8 bg-zinc-900 hover:cursor-pointer w-fit">
+          className="hover:bg-zinc-600 md:text-xl text-base h-fit py-1 border-2 border-black px-4 shadow-lg rounded-md mt-8 bg-zinc-900 hover:cursor-pointer w-fit">
           Submit
         </button>
         <button
           onClick={() => setShow(false)}
-          className="hover:bg-zinc-600  md:text-xl text-base h-fit py-1 border-2 border-black px-4 shadow-lg rounded-md my-8 bg-zinc-900 hover:cursor-pointer w-fit">
+          className="hover:bg-zinc-600  md:text-xl text-base h-fit py-1 border-2 border-black px-4 shadow-lg rounded-md mt-8 mb-2 bg-zinc-900 hover:cursor-pointer w-fit">
           Cancel
         </button>
       </div>
@@ -141,83 +146,85 @@ const SubmitPost = ({ setShow, createAlert }) => {
               ))}
             </div>
           </div>
-        </div>
 
-        <div className="flex flex-row justify-between mb-4 mx-4 md:mx-8 max-w-xl w-11/12">
-          <div className="flex flex-col">
-            {/* Handles select box for skill */}
-            <label
-              htmlFor="skills-needed"
-              className="text-base py-3 pr-8">
-              Skills Needed
-            </label>
-            <select
-              required
-              id="skills-needed"
-              value={post.skillNeeded.at(-1)}
-              onChange={e => {
-                // if the skill is already in the array, remove it, otherwise add it
-                if (post.skillNeeded.includes(e.target.value)) {
-                  setPost(prevPost => ({
-                    ...prevPost,
-                    skillNeeded: prevPost.skillNeeded.filter(
-                      string => string !== e.target.value
-                    )
-                  }));
-                } else {
-                  setPost(prevPost => ({
-                    ...prevPost,
-                    skillNeeded: [
-                      ...prevPost.skillNeeded,
-                      e.target.value
-                    ]
-                  }));
-                }
-              }}
-              className="mb-4 w-34 h-10 p-2 bg-neutral-900 md:text-base text-xs leading-tight focus:outline-none hover:cursor-pointer focus:shadow-outline rounded ease">
-              <option value="Web Dev">Web Dev</option>
-              <option value="Mobile Dev">Mobile Dev</option>
-              <option value="Data Science">Data Science</option>
-              <option value="UI/UX">UI/UX</option>
-              <option value="Cyber Security">Cyber Security</option>
-              <option value="Game Dev">Game Dev</option>
-            </select>
-          </div>
-          <div className="flex flex-col items-end">
-            {/* Handles select box for level */}
-            <label
-              htmlFor="level-needed"
-              className="text-base py-3 pl-8">
-              Level Needed
-            </label>
-            <select
-              required
-              id="level-needed"
-              value={post.levelNeeded.at(-1)}
-              // if the level is already in the array, remove it, otherwise add it
-              onChange={e => {
-                if (post.levelNeeded.includes(e.target.value)) {
-                  setPost(prevPost => ({
-                    ...prevPost,
-                    levelNeeded: prevPost.levelNeeded.filter(
-                      string => string !== e.target.value
-                    )
-                  }));
-                } else {
-                  setPost(prevPost => ({
-                    ...prevPost,
-                    levelNeeded: [
-                      ...prevPost.levelNeeded,
-                      e.target.value
-                    ]
-                  }));
-                }
-              }}
-              className="absolutemx-8 hover:cursor-pointer mb-4 w-32 h-10 p-2 bg-neutral-900 md:text-base text-xs leading-tight focus:outline-none focus:shadow-outline rounded ease">
-              <option value="Beginner">Beginner</option>
-              <option value="Intermediate">Intermediate</option>
-              <option value="Advanced">Advanced</option>
-            </select>
+          <div className="flex flex-row justify-between border-t border-zinc-700">
+            <div className="flex flex-col">
+              {/* Handles select box for skill */}
+              <label
+                htmlFor="skills-needed"
+                className="text-base py-3 pr-8">
+                Skills Needed
+              </label>
+              <select
+                required
+                id="skills-needed"
+                value={post.skillNeeded.at(-1)}
+                onChange={e => {
+                  // if the skill is already in the array, remove it, otherwise add it
+                  if (post.skillNeeded.includes(e.target.value)) {
+                    setPost(prevPost => ({
+                      ...prevPost,
+                      skillNeeded: prevPost.skillNeeded.filter(
+                        string => string !== e.target.value
+                      )
+                    }));
+                  } else {
+                    setPost(prevPost => ({
+                      ...prevPost,
+                      skillNeeded: [
+                        ...prevPost.skillNeeded,
+                        e.target.value
+                      ]
+                    }));
+                  }
+                }}
+                className="mb-4 w-34 h-10 p-2 bg-neutral-900 md:text-base text-xs leading-tight focus:outline-none hover:cursor-pointer focus:shadow-outline rounded ease">
+                <option value="Web Dev">Web Dev</option>
+                <option value="Mobile Dev">Mobile Dev</option>
+                <option value="Data Science">Data Science</option>
+                <option value="UX">UX</option>
+                <option value="Cyber Security">
+                  Cyber Security
+                </option>
+                <option value="Game Dev">Game Dev</option>
+              </select>
+            </div>
+            <div className="flex flex-col items-end">
+              {/* Handles select box for level */}
+              <label
+                htmlFor="level-needed"
+                className="text-base py-3 pl-8">
+                Levels Needed
+              </label>
+              <select
+                required
+                id="level-needed"
+                value={post.levelNeeded.at(-1)}
+                // if the level is already in the array, remove it, otherwise add it
+                onChange={e => {
+                  if (post.levelNeeded.includes(e.target.value)) {
+                    setPost(prevPost => ({
+                      ...prevPost,
+                      levelNeeded: prevPost.levelNeeded.filter(
+                        string => string !== e.target.value
+                      )
+                    }));
+                  } else {
+                    setPost(prevPost => ({
+                      ...prevPost,
+                      levelNeeded: [
+                        ...prevPost.levelNeeded,
+                        e.target.value
+                      ]
+                    }));
+                  }
+                }}
+                className="absolutemx-8 hover:cursor-pointer mb-4 w-32 h-10 p-2 bg-neutral-900 md:text-base text-xs leading-tight focus:outline-none focus:shadow-outline rounded ease">
+                <option value="Beginner">Beginner</option>
+                <option value="Intermediate">Intermediate</option>
+                <option value="Advanced">Advanced</option>
+              </select>
+            </div>
           </div>
         </div>
       </form>

@@ -3,8 +3,9 @@ import axios, { AxiosHeaders } from 'axios';
 import Image from 'react-bootstrap/Image';
 import pp1Image from '../assets/pp1.jpg';
 import FilterBy from './FilterBy';
+import Sync from './Sync';
 
-const GetPosts = ({ createAlert, userId }) => {
+const GetPosts = ({ createAlert, userId, createSync }) => {
   const BASE_URL = 'http://localhost:8080';
   const [posts, setPosts] = useState([]);
   const [lastPost, setLastPost] = useState(false);
@@ -31,7 +32,6 @@ const GetPosts = ({ createAlert, userId }) => {
     setFilterBy(filter);
   };
 
-
   const getPosts = async () => {
     // set the last post to false every time we get new posts then check if the response is less than 10
     setLastPost(false);
@@ -39,7 +39,10 @@ const GetPosts = ({ createAlert, userId }) => {
     if (userId != -1) {
       try {
         const response = await axios.get(
-          `${BASE_URL}/api/posts/user/${userId}/${new Date().toISOString().slice(0, 19).replace('T', ' ')}`
+          `${BASE_URL}/api/posts/user/${userId}/${new Date()
+            .toISOString()
+            .slice(0, 19)
+            .replace('T', ' ')}`
         );
         if (response.data.length < 10) {
           setLastPost(true);
@@ -59,13 +62,15 @@ const GetPosts = ({ createAlert, userId }) => {
         }
       }
       return;
-
     }
 
     if (filterBy.skillQuery === '' && filterBy.levelQuery === '') {
       try {
         const response = await axios.get(
-          `${BASE_URL}/api/posts/all/${new Date().toISOString().slice(0, 19).replace('T', ' ')}`
+          `${BASE_URL}/api/posts/all/${new Date()
+            .toISOString()
+            .slice(0, 19)
+            .replace('T', ' ')}`
         );
         if (response.data.length < 10) {
           setLastPost(true);
@@ -84,9 +89,14 @@ const GetPosts = ({ createAlert, userId }) => {
         }
       }
     } else {
-      const queryLevel = filterBy.levelQuery === '' ? 'null' : filterBy.levelQuery;
-      const querySkill = filterBy.skillQuery === '' ? 'null' : filterBy.skillQuery;
-      const queryDate = new Date().toISOString().slice(0, 19).replace('T', ' ')
+      const queryLevel =
+        filterBy.levelQuery === '' ? 'null' : filterBy.levelQuery;
+      const querySkill =
+        filterBy.skillQuery === '' ? 'null' : filterBy.skillQuery;
+      const queryDate = new Date()
+        .toISOString()
+        .slice(0, 19)
+        .replace('T', ' ');
       try {
         const response = await axios.get(
           `${BASE_URL}/api/posts/query/${queryLevel}/${querySkill}/${queryDate}`
@@ -112,13 +122,15 @@ const GetPosts = ({ createAlert, userId }) => {
   };
 
   const handleDelete = async postId => {
-    const confirmed = window.confirm('Are you sure you want to delete this post?');
+    const confirmed = window.confirm(
+      'Are you sure you want to delete this post?'
+    );
     if (!confirmed) {
       return;
     }
     try {
       await axios.delete(`${BASE_URL}/api/posts/${postId}`, {
-        headers: { Authorization: `Bearer ${currUser.jwt}`}
+        headers: { Authorization: `Bearer ${currUser.jwt}` }
       });
       setPosts(
         posts.filter(post => {
@@ -132,7 +144,6 @@ const GetPosts = ({ createAlert, userId }) => {
       console.log(error);
     }
 
-    
     // try {
     //   const response = await axios.get(`${BASE_URL}/api/posts/all`);
     //   setPosts(response.data);
@@ -172,7 +183,12 @@ const GetPosts = ({ createAlert, userId }) => {
         .put(
           BASE_URL + `/api/posts/update/${originalPost.postId}`,
           editedPost,
-          { headers: { Authorization: `Bearer ${currUser.jwt}`, 'Content-Type': 'application/json' } }
+          {
+            headers: {
+              Authorization: `Bearer ${currUser.jwt}`,
+              'Content-Type': 'application/json'
+            }
+          }
         )
         .then(res => {
           setEditMode({ ...editMode, edit: false });
@@ -205,11 +221,6 @@ const GetPosts = ({ createAlert, userId }) => {
         postId: originalPost.postId
       });
     }
-  };
-
-  // For messaging users
-  const handleSync = () => {
-    return;
   };
 
   const handleLoadMore = async () => {
@@ -255,8 +266,10 @@ const GetPosts = ({ createAlert, userId }) => {
         console.log(error);
       }
     } else {
-      const queryLevel = filterBy.levelQuery === '' ? 'null' : filterBy.levelQuery;
-      const querySkill = filterBy.skillQuery === '' ? 'null' : filterBy.skillQuery;
+      const queryLevel =
+        filterBy.levelQuery === '' ? 'null' : filterBy.levelQuery;
+      const querySkill =
+        filterBy.skillQuery === '' ? 'null' : filterBy.skillQuery;
       try {
         const response = await axios.get(
           `${BASE_URL}/api/posts/query/${queryLevel}/${querySkill}/${lastPostDate}`
@@ -276,15 +289,18 @@ const GetPosts = ({ createAlert, userId }) => {
     }
   };
 
+  const handleUsernameClick = username => {
+    window.location.href = `/profile/${username}`;
+  };
+
   return (
     <>
       {userId === -1 && (
         <FilterBy
-        updateFilterBy={updateFilterBy}
-        filterBy={filterBy}
-      />
+          updateFilterBy={updateFilterBy}
+          filterBy={filterBy}
+        />
       )}
-      
 
       {posts.length > 0 &&
         posts.map(post => {
@@ -299,7 +315,7 @@ const GetPosts = ({ createAlert, userId }) => {
             <div
               key={post.postId}
               className="pt-4 pb-6 border rounded-lg shadow-md border-black my-1 md:my-2 min-w-full
-            max-w-screen-md bg-zinc-800 flex flex-row">
+            max-w-screen-md bg-zinc-800 flex flex-row overflow-hidden">
               <div className="flex flex-col text-center items-center min-w-fit md:w-40">
                 {post.imageUri ? (
                   <Image
@@ -315,7 +331,9 @@ const GetPosts = ({ createAlert, userId }) => {
                   />
                 )}
 
-                <h4 className="md:text-base text-sm">
+                <h4
+                  className="md:text-base text-sm hover:underline hover:cursor-pointer"
+                  onClick={e => handleUsernameClick(post.username)}>
                   {' '}
                   {'@' + post.username}{' '}
                 </h4>
@@ -343,7 +361,12 @@ const GetPosts = ({ createAlert, userId }) => {
                 ) : (
                   <button
                     onClick={() => {
-                      handleSync(post.userId);
+                      createSync({
+                        receiverId: post.userId,
+                        senderId: currUser.userId,
+                        receiverUsername: post.username,
+                        syncShow: true
+                      });
                     }}
                     className="bg-zinc-900 mt-2 py-1
                 px-4 hover:bg-zinc-600 rounded-md w-18 border-black border shadow-sm md:text-base text-sm">
@@ -367,7 +390,7 @@ const GetPosts = ({ createAlert, userId }) => {
                     required
                     autoFocus
                     onFocus={e => e.target.select()}
-                    className="flex flex-col md:h-40 h-36 max-w-full relative rounded-lg bg-zinc-700 resize-none px-4 pb-2 pt-4 outline-none text-xs md:text-base"
+                    className="flex flex-col md:h-40 h-36 max-w-full relative rounded-lg bg-zinc-700 resize-none px-4 pb-2 pt-4 outline-none text-sm md:text-base"
                   />
                 ) : (
                   // Regular post content

@@ -46,7 +46,6 @@ const MyAccount = () => {
       .get(`https://api.multiavatar.com/${promptTemp}.svg`)
       .then(res => {
         setPromptImg(res.config.url);
-        console.log(res.config.url);
       })
       .catch(err => {
         console.log(err);
@@ -72,7 +71,6 @@ const MyAccount = () => {
         )
         .then(res => {
           if (res.status === 200) {
-            console.log('Prompt submitted');
           }
         })
         .catch(err => {

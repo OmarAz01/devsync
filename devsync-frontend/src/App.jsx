@@ -8,6 +8,7 @@ import {
 import {
   SignIn,
   SignUp,
+  SignOut,
   MyAccount,
   Feed,
   UserProfile
@@ -40,7 +41,6 @@ const App = () => {
               JSON.stringify(response.data)
             );
             setLoggedIn(true);
-            console.log('Logged In');
           }
         })
         .catch(error => {
@@ -101,11 +101,6 @@ const App = () => {
                   Profile
                 </h4>
               </Link>
-              <Link to="/messaging">
-                <h4 className="px-4 py-1 hover:text-zinc-500 text-left border-b border-zinc-600">
-                  Messaging
-                </h4>
-              </Link>
               <Link to="/signout">
                 <h4 className="px-4 py-1 hover:text-red-500 text-left">
                   Sign Out
@@ -121,20 +116,17 @@ const App = () => {
       </header>
       <main>
         <Routes>
-          {/* <Route path="/" element={<Home />} />
-          <Route path="/messaging" element={<Messaging />} />
-          <Route path="/myaccount" element={<MyAccount />} /> */}
+          <Route path="/myaccount" element={<MyAccount />} /> */
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/myaccount" element={<MyAccount />} />
           <Route path="/feed" element={<Feed />} />
-          <Route path="/:username" element={<UserProfile />} />
-        </Routes>
-        {/* <Routes>
-          <Route path="/" element={<Home />} />
+          <Route
+            path="/profile/:username"
+            element={<UserProfile />}
+          />
           <Route path="/signout" element={<SignOut />} />
-          <Route path="/signup" element={<SignUp />} />
-        </Routes> */}
+        </Routes>
       </main>
       <footer></footer>
     </BrowserRouter>

@@ -119,7 +119,7 @@ const ProfileView = ({ user, createAlert }) => {
           </button>
         </div>
         {user.bio === null && editBio === false ? (
-          <p className="text-neutral-100 mt-4 text-left md:h-56 h-44">
+          <p className="text-neutral-100 italic mt-3 text-left md:h-56 h-44">
             Add a bio{' '}
           </p>
         ) : editBio === false ? (
@@ -163,18 +163,24 @@ const ProfileView = ({ user, createAlert }) => {
         </div>
 
         <div className="flex flex-row w-full flex-wrap justify-start items-left mt-4 h-24">
-          {skills !== undefined && skills !== null
-            ? skills.map(skill => (
-                <h4
-                  onClick={() => handleSkillChange(skill)}
-                  key={skill}
-                  className="flex items-center flex-row md:text-base text-sm w-fit mr-2 mt-1 h-fit rounded-md bg-zinc-700 px-2 py-1
+          {skills !== undefined &&
+          skills !== null &&
+          skills.length !== 0 ? (
+            skills.map(skill => (
+              <h4
+                onClick={() => handleSkillChange(skill)}
+                key={skill}
+                className="flex items-center flex-row md:text-base text-sm w-fit mr-2 mt-1 h-fit rounded-md bg-zinc-700 px-2 py-1
                     hover:bg-red-500 hover:cursor-pointer">
-                  {skill + ' |'}&nbsp;
-                  <CircumIcon size="22px" name="square_remove" />
-                </h4>
-              ))
-            : null}
+                {skill + ' |'}&nbsp;
+                <CircumIcon size="22px" name="square_remove" />
+              </h4>
+            ))
+          ) : (
+            <p className="text-neutral-100 italic text-left md:h-56 h-44">
+              Add skills to your profile
+            </p>
+          )}
         </div>
         <div className="flex flex-row border-b justify-between pb-2 mt-4">
           {/* Level section */}

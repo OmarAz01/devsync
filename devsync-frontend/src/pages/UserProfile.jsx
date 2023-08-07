@@ -12,7 +12,7 @@ const UserProfile = () => {
   useEffect(() => {
     // Get the username from the URL
     const pathname = window.location.pathname;
-    const usernameFromURL = pathname.split('/')[1];
+    const usernameFromURL = pathname.split('/')[2];
 
     if (usernameFromURL) {
       axios
@@ -69,7 +69,7 @@ const UserProfile = () => {
             {user.bio}
           </p>
         ) : (
-          <p className="text-neutral-100 mt-4 text-left md:h-56 h-44">
+          <p className="text-neutral-100 italic mt-4 text-left md:h-56 h-44">
             {user.username} has not written about themselves yet.
           </p>
         )}
@@ -77,16 +77,20 @@ const UserProfile = () => {
           <h4 className="md:text-xl text-lg text-left">Skills</h4>
         </div>
         <div className="flex flex-row w-full flex-wrap justify-start items-left mt-4 h-24">
-          {user.skill !== undefined && user.skill !== null
-            ? user.skill.split(', ').map(skill => (
-                <h4
-                  key={skill}
-                  className="flex items-center flex-row md:text-base text-sm w-fit mr-2 mt-1 h-fit rounded-md bg-zinc-700 px-2 py-1
+          {user.skill !== undefined && user.skill !== null ? (
+            user.skill.split(', ').map(skill => (
+              <h4
+                key={skill}
+                className="flex items-center flex-row md:text-base text-sm w-fit mr-2 mt-1 h-fit rounded-md bg-zinc-700 px-2 py-1
                     ">
-                  {skill}
-                </h4>
-              ))
-            : null}
+                {skill}
+              </h4>
+            ))
+          ) : (
+            <p className="text-neutral-100 italic text-left md:h-56 h-44">
+              {user.username} has not added any skills yet.
+            </p>
+          )}
         </div>
       </div>
       <ToastContainer
