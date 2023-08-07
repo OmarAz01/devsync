@@ -150,4 +150,15 @@ public class AuthService {
         }
     }
 
+    public void logout(HttpServletRequest request, HttpServletResponse response) {
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        }
+        String jwt = authHeader.substring(7);
+        Long id = Long.valueOf(jwtService.getUserId(jwt));
+        refreshTokenService.deleteRefreshToken(id);
+        response.setStatus(HttpServletResponse.SC_OK);
+    }
 }

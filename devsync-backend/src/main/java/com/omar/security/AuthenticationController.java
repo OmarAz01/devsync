@@ -38,5 +38,12 @@ public class AuthenticationController {
         authService.validateToken(request, response);
     }
 
+    @GetMapping("/logout")
+    public void logout(
+            HttpServletRequest request,
+            HttpServletResponse response) throws IOException {
+        authService.logout(request, response);
+    }
+
 
 }
