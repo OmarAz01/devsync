@@ -8,7 +8,7 @@ import Sync from '../components/Sync';
 
 const Feed = () => {
   const currUser = JSON.parse(localStorage.getItem('user'));
-  const BASE_URL = 'http://localhost:8080';
+  const BASE_URL = import.meta.env.VITE_BASE_URL;
   const [show, setShow] = useState(false);
   const [sync, setSync] = useState({
     receiverId: '',
@@ -23,13 +23,6 @@ const Feed = () => {
     } else {
       return toast.error(title);
     }
-  };
-
-  const updateFilterBy = queryFilter => {
-    setFilterBy({
-      skillQuery: queryFilter.skillQuery,
-      levelQuery: queryFilter.levelQuery
-    });
   };
 
   const createSync = sync => {
@@ -64,6 +57,7 @@ const Feed = () => {
               receiverId={sync.receiverId}
               receiverUsername={sync.receiverUsername}
               handleSyncShow={handleSyncShow}
+              createAlert={createAlert}
             />
           </div>
         </>
@@ -89,7 +83,7 @@ const Feed = () => {
                 show
                   ? 'opacity-0 pointer-events-none transition-opacity'
                   : 'transition-opacity opacity-100 duration-300 delay-500'
-              } hover:bg-zinc-600 md:text-2xl text-lg py-1 h-fit border-2 border-black px-4 shadow-sm rounded-md md:mx-8 mt-8 bg-zinc-900 mx-4 hover:cursor-pointer w-fit`}>
+              } hover:bg-blue-500 md:text-xl text-base py-1 h-fit border-2 border-black px-4 shadow-sm rounded-md md:mx-8 mt-2 bg-zinc-900 mx-4 hover:cursor-pointer w-fit`}>
               Create a New Post
             </button>
           </div>
@@ -101,7 +95,7 @@ const Feed = () => {
                   ? 'transition-all duration-500 ease-in-out md:translate-y-[500px] translate-y-[450px] delay-200'
                   : 'translate-y-0 transition-all duration-500 ease-in-out delay-200'
               } flex flex-col max-w-screen-md w-full pb-8 text-left items-center mx-4 md:mx-8`}>
-              <div className="flex flex-col content-left w-full text-left py-8">
+              <div className="flex flex-col content-left w-full text-left pt-2 pb-4">
                 <h4 className="text-2xl md:text-3xl pt-2">
                   Browse Posts
                 </h4>
@@ -114,8 +108,8 @@ const Feed = () => {
             </div>
             <div className="border rounded-md border-zinc-700 w-full mt-10 max-w-sm hidden lg:flex p-4 mx-4 flex-col">
               <div className="flex flex-col w-full border-b-2 border-zinc-600 h-fit text-center">
-                <h1 className="text-2xl pb-2 font-bold text-neutral-100">
-                  Syncs
+                <h1 className="text-3xl pb-2 text-neutral-100">
+                  Received Syncs
                 </h1>
               </div>
               {currUser && <DisplaySyncs userId={currUser.userId} />}

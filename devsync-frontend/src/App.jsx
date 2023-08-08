@@ -11,13 +11,15 @@ import {
   SignOut,
   MyAccount,
   Feed,
-  UserProfile
+  UserProfile,
+  Home
 } from './pages/index';
 import axios from 'axios';
 import '../index.css';
+import githubLogo from './assets/github-logo.png';
 
 const App = () => {
-  const BASE_URL = 'http://localhost:8080';
+  const BASE_URL = import.meta.env.VITE_BASE_URL;
   const [loggedIn, setLoggedIn] = useState(false);
   const [open, setOpen] = useState(false);
   const refOpen = useRef(null);
@@ -75,7 +77,7 @@ const App = () => {
         <Link to="/">
           <h4 className="p-4 absolute left-0 hover:text-zinc-500">
             {' '}
-            devsync{' '}
+            devsync.{' '}
           </h4>
         </Link>
         <Link to="/feed">
@@ -114,8 +116,9 @@ const App = () => {
           </Link>
         )}
       </header>
-      <main>
+      <main className="min-h-[calc(100vh-200px)]">
         <Routes>
+          <Route path="/" element={<Home />} />
           <Route path="/myaccount" element={<MyAccount />} /> */
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
@@ -128,7 +131,22 @@ const App = () => {
           <Route path="/signout" element={<SignOut />} />
         </Routes>
       </main>
-      <footer></footer>
+      <footer>
+        <div className="p-4 mt-4 relative inset-x-0 bottom-0 h-fit border-t border-zinc-700 items-center justify-center text-center">
+          <div className="w-full items-center flex flex-col">
+            <p className="text-gray-400 pb-2">
+              Created by Omar Alzoubi
+            </p>
+            <a href="https://github.com/OmarAz01/devsync">
+              <img
+                className="w-10 bg-inherit hover:transform hover:scale-110 pb-4"
+                src={githubLogo}
+                alt="Github Profile"
+              />
+            </a>
+          </div>
+        </div>
+      </footer>
     </BrowserRouter>
   );
 };

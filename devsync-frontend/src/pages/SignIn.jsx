@@ -8,7 +8,7 @@ const SignIn = () => {
     email: '',
     password: ''
   });
-  const BASE_URL = 'http://localhost:8080';
+  const BASE_URL = import.meta.env.VITE_BASE_URL;
 
   const handleLogin = async e => {
     e.preventDefault();
@@ -31,7 +31,7 @@ const SignIn = () => {
   };
   return (
     <div className="w-full flex flex-col justify-center">
-      <div className="flex flex-col justify-center my-auto pt-8 mt-28 px-8 md:px-24 lg:px-32">
+      <div className="flex flex-col justify-center my-auto pt-8 mt-16 md:mt-28 px-8 md:px-24 lg:px-32">
         <p className="text-center text-3xl">Log In</p>
         <form
           className="flex flex-col md:items-center pt-8"

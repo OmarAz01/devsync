@@ -6,7 +6,7 @@ import FilterBy from './FilterBy';
 import Sync from './Sync';
 
 const GetPosts = ({ createAlert, userId, createSync }) => {
-  const BASE_URL = 'http://localhost:8080';
+  const BASE_URL = import.meta.env.VITE_BASE_URL;
   const [posts, setPosts] = useState([]);
   const [lastPost, setLastPost] = useState(false);
   const [lastPostDate, setLastPostDate] = useState(
@@ -293,6 +293,19 @@ const GetPosts = ({ createAlert, userId, createSync }) => {
     window.location.href = `/profile/${username}`;
   };
 
+  const handleSyncClick = (receiverId, receiverUsername) => {
+    if (!currUser) {
+      createAlert('Please log in to sync', 'error');
+      return;
+    }
+    createSync({
+      receiverId: post.userId,
+      senderId: currUser.userId,
+      receiverUsername: post.username,
+      syncShow: true
+    });
+  };
+
   return (
     <>
       {userId === -1 && (
@@ -361,15 +374,10 @@ const GetPosts = ({ createAlert, userId, createSync }) => {
                 ) : (
                   <button
                     onClick={() => {
-                      createSync({
-                        receiverId: post.userId,
-                        senderId: currUser.userId,
-                        receiverUsername: post.username,
-                        syncShow: true
-                      });
+                      handleSyncClick(post.userId, post.username);
                     }}
                     className="bg-zinc-900 mt-2 py-1
-                px-4 hover:bg-zinc-600 rounded-md w-18 border-black border shadow-sm md:text-base text-sm">
+                px-4 hover:bg-blue-500 rounded-md w-18 border-black border shadow-sm md:text-base text-sm">
                     Sync
                   </button>
                 )}
@@ -394,19 +402,17 @@ const GetPosts = ({ createAlert, userId, createSync }) => {
                   />
                 ) : (
                   // Regular post content
-                  <p className="text-sm md:text-base px-4 pt-4 pb-2 break-all mb-8">
+                  <p className="text-sm md:text-base md:px-4 md:pt-4 md:pb-2 px-2 pt-3 break-all mb-8">
                     {post.content}
                   </p>
                 )}
                 <div className="flex flex-col py-4 ">
-                  <h3 className="text-sm md:text-base px-4">
-                    {' '}
-                    {post.skillNeeded}
+                  <h3 className="text-sm md:text-base p-2 md:px-4">
+                    Skills Needed: {post.skillNeeded}
                   </h3>
 
-                  <h3 className="text-sm md:text-base pt-2 px-4">
-                    {' '}
-                    {post.levelNeeded}
+                  <h3 className="text-sm md:text-base md:pt-2 md:px-4 p-2">
+                    Levels Needed: {post.levelNeeded}
                   </h3>
                 </div>
                 <div className="flex absolute -bottom-5 right-0">

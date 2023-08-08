@@ -4,7 +4,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const SignUp = () => {
-  const BASE_URL = 'http://localhost:8080';
+  const BASE_URL = import.meta.env.VITE_BASE_URL;
   const [register, setRegister] = useState({
     username: '',
     email: '',
@@ -57,7 +57,7 @@ const SignUp = () => {
 
   return (
     <div className="w-full flex flex-col justify-center">
-      <div className="flex flex-col justify-center my-auto pt-8 mt-28 px-8 lg:px-32">
+      <div className="flex flex-col justify-center my-auto pt-8 mt-16 md:mt-28 px-8 lg:px-32">
         <p className="text-center text-3xl">Register</p>
         <form
           className="flex flex-col pt-8 md:items-center"

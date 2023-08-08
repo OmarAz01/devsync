@@ -4,7 +4,7 @@ import CircumIcon from '@klarr-agency/circum-icons-react';
 
 const ProfileView = ({ user, createAlert }) => {
   const currUser = JSON.parse(localStorage.getItem('user'));
-  const BASE_URL = 'http://localhost:8080';
+  const BASE_URL = import.meta.env.VITE_BASE_URL;
   const [editBio, setEditBio] = useState(false);
   const [bio, setBio] = useState(user.bio || '');
   const [level, setLevel] = useState('');

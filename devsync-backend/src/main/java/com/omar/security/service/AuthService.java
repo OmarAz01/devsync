@@ -50,7 +50,9 @@ public class AuthService {
         user.setEmail(request.getEmail());
         user.setUsername(request.getUsername());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setRole(Role.USER); // fix this later
+        user.setLevel("Beginner");
+        user.setRole(Role.USER);
+
 
         // Saving the user
         try {

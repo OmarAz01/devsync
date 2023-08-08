@@ -76,10 +76,8 @@ public class SyncServiceImpl implements SyncService {
                 syncEntity.setReceiver(receiver.get());
                 syncEntity.setContent(syncDTO.getContent());
                 syncEntity.setDateCreated(decodedTime);
-                System.out.println("saving sync");
                 syncRepo.save(syncEntity);
-                System.out.println("saved sync");
-                return ResponseEntity.status(HttpStatus.OK).body(syncEntity.getSyncId());
+                return ResponseEntity.status(HttpStatus.CREATED).body(syncEntity.getSyncId());
 
             } catch (Exception e) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);

@@ -4,7 +4,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const SignOut = () => {
-  const BASE_URL = 'http://localhost:8080';
+  const BASE_URL = import.meta.env.VITE_BASE_URL;
   const currUser = JSON.parse(localStorage.getItem('user'));
 
   useEffect(() => {
@@ -18,10 +18,11 @@ const SignOut = () => {
         .then(response => {
           if (response.status === 200) {
             toast.success(
-              'Successfully logged out, redirecting to home page'
+              'Successfully logged out, redirecting to sign in page'
             );
+            localStorage.removeItem('user');
             setTimeout(() => {
-              window.location.href = '/';
+              window.location.href = '/signin';
             }, 3000);
           }
         })
@@ -29,13 +30,12 @@ const SignOut = () => {
           toast.error('Something went wrong');
         });
     } else {
-      window.location.href = '/';
+      window.location.href = '/signin';
     }
   }, []);
 
   return (
     <>
-      <div>SignOut</div>
       <ToastContainer
         position="top-center"
         autoClose={5000}

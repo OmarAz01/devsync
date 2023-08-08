@@ -4,7 +4,7 @@ import CircumIcon from '@klarr-agency/circum-icons-react';
 
 const SubmitPost = ({ setShow, createAlert }) => {
   const currUser = JSON.parse(localStorage.getItem('user'));
-  const BASE_URL = 'http://localhost:8080';
+  const BASE_URL = import.meta.env.VITE_BASE_URL;
   const [post, setPost] = useState({
     content: '',
     levelNeeded: ['Beginner'],

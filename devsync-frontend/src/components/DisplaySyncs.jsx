@@ -4,7 +4,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const DisplaySyncs = ({ userId }) => {
-  const BASE_URL = 'http://localhost:8080';
+  const BASE_URL = import.meta.env.VITE_BASE_URL;
   const currUser = JSON.parse(localStorage.getItem('user'));
   const [syncs, setSyncs] = useState([]);
   useEffect(() => {
