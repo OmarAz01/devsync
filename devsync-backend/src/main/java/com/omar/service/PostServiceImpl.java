@@ -33,7 +33,8 @@ public class PostServiceImpl implements PostService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Object principal = authentication.getPrincipal();
         if (principal instanceof UserEntity) {
-            if (!((UserEntity) principal).getUserId().equals(post.get().getUser().getUserId())) {
+            if (!((UserEntity) principal).getUserId().equals(post.get().getUser().getUserId()) &&
+                    !((UserEntity) principal).getRole().toString().equals("ADMIN")) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
             }
         } else {

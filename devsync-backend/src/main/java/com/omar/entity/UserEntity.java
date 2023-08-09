@@ -29,7 +29,6 @@ public class UserEntity implements UserDetails {
     private String imageUri;
     @Column(columnDefinition = "TEXT")
     private String bio;
-    @Column(columnDefinition = "default 'Beginner'")
     private String skill;
     private String level;
     @Enumerated(EnumType.STRING)

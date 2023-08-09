@@ -50,8 +50,13 @@ public class AuthService {
         user.setEmail(request.getEmail());
         user.setUsername(request.getUsername());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
+        // This is bad practice, but I'm doing it because I forgot to implement roles
+        if (request.getUsername().equals("devsync")) {
+            user.setRole(Role.ADMIN);
+        } else {
+            user.setRole(Role.USER);
+        }
         user.setLevel("Beginner");
-        user.setRole(Role.USER);
 
 
         // Saving the user

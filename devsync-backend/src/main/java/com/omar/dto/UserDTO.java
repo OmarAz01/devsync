@@ -14,6 +14,7 @@ public class UserDTO {
     private String email;
     private String username;
     private String imageUri;
+    private String role;
     private String bio;
     private String skill;
     private String level;
@@ -24,27 +25,11 @@ public class UserDTO {
                 user.getEmail(),
                 user.getUsername(),
                 user.getImageUri(),
+                user.getRole().toString(),
                 user.getBio(),
                 user.getSkill(),
                 user.getLevel()
         );
-    }
-
-    public static List<UserDTO> convertToDTO(List<UserEntity> users) {
-        List<UserDTO> userDTOs = new ArrayList<>();
-        for (UserEntity user : users) {
-            UserDTO userDTO = new UserDTO(
-                    user.getUserId(),
-                    user.getEmail(),
-                    user.getUsername(),
-                    user.getImageUri(),
-                    user.getBio(),
-                    user.getSkill(),
-                    user.getLevel()
-            );
-            userDTOs.add(userDTO);
-        }
-        return userDTOs;
     }
 }
 

@@ -5,7 +5,7 @@ import pp1Image from '../assets/pp1.jpg';
 import FilterBy from './FilterBy';
 import Sync from './Sync';
 
-const GetPosts = ({ createAlert, userId, createSync }) => {
+const GetPosts = ({ createAlert, userId, userRole, createSync }) => {
   const BASE_URL = import.meta.env.VITE_BASE_URL;
   const [posts, setPosts] = useState([]);
   const [lastPost, setLastPost] = useState(false);
@@ -58,6 +58,7 @@ const GetPosts = ({ createAlert, userId, createSync }) => {
           setPosts([]);
           setLastPost(true);
         } else {
+          setLastPost(true);
           console.log(error);
         }
       }
@@ -85,6 +86,7 @@ const GetPosts = ({ createAlert, userId, createSync }) => {
         if (error.response && error.response.status === 404) {
           setLastPost(true);
         } else {
+          setLastPost(true);
           console.log(error);
         }
       }
@@ -115,6 +117,7 @@ const GetPosts = ({ createAlert, userId, createSync }) => {
           setPosts([]);
           setLastPost(true);
         } else {
+          setLastPost(true);
           console.log(error);
         }
       }
@@ -263,6 +266,7 @@ const GetPosts = ({ createAlert, userId, createSync }) => {
           );
         }
       } catch (error) {
+        setLastPost(true);
         console.log(error);
       }
     } else {
@@ -284,6 +288,7 @@ const GetPosts = ({ createAlert, userId, createSync }) => {
           );
         }
       } catch (error) {
+        setLastPost(true);
         console.log(error);
       }
     }
@@ -354,7 +359,8 @@ const GetPosts = ({ createAlert, userId, createSync }) => {
                   {' '}
                   {post.userLevel}{' '}
                 </h4>
-                {currUser && post.userId === currUser.userId ? (
+                {(currUser && post.userId === currUser.userId) ||
+                userRole === 'ADMIN' ? (
                   <>
                     <button
                       onClick={() => {

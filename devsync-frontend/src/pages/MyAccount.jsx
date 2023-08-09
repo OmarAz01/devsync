@@ -55,7 +55,7 @@ const MyAccount = () => {
   const handlePromptSubmit = e => {
     e.preventDefault();
     const confirmed = window.confirm(
-      'Once submitted, you cannot change your prompt. Are you sure?'
+      'Once submitted, you cannot change your profile picture. Are you sure?'
     );
     if (confirmed) {
       axios
@@ -71,6 +71,8 @@ const MyAccount = () => {
         )
         .then(res => {
           if (res.status === 200) {
+            setUser({ ...user, imageUri: promptImg });
+            createAlert('Profile picture set!', 'success');
           }
         })
         .catch(err => {

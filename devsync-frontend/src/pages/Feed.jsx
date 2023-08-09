@@ -5,6 +5,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import DisplaySyncs from '../components/DisplaySyncs';
 import Sync from '../components/Sync';
+import axios from 'axios';
 
 const Feed = () => {
   const currUser = JSON.parse(localStorage.getItem('user'));
@@ -16,6 +17,22 @@ const Feed = () => {
     receiverUsername: '',
     syncShow: false
   });
+  const [userRole, setUserRole] = useState('');
+
+  useEffect(() => {
+    if (!currUser) {
+      return;
+    }
+    //get user to find out role
+    axios
+      .get(`${BASE_URL}/api/user/${currUser.userId}`)
+      .then(res => {
+        setUserRole(res.data.role);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  }, []);
 
   const createAlert = (title, variant) => {
     if (variant === 'success') {
@@ -103,6 +120,7 @@ const Feed = () => {
               <GetPosts
                 createAlert={createAlert}
                 userId={-1}
+                userRole={currUser ? userRole : ''}
                 createSync={createSync}
               />
             </div>
