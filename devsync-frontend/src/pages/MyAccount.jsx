@@ -7,6 +7,7 @@ import ProfileView from '../components/ProfileView';
 import SecurityView from '../components/SecurityView';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useNavigate } from 'react-router-dom';
 
 const MyAccount = () => {
   const [user, setUser] = useState({});
@@ -14,13 +15,15 @@ const MyAccount = () => {
   const [promptImg, setPromptImg] = useState('');
   const [currView, setCurrView] = useState('Profile');
   const currUser = JSON.parse(localStorage.getItem('user'));
+  const BASE_URL = import.meta.env.VITE_BASE_URL;
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!currUser) {
-      window.location.href = '/login';
+      navigate('/signin');
     } else {
       axios
-        .get(`http://localhost:8080/api/user/${currUser.userId}`)
+        .get(`${BASE_URL}/api/user/${currUser.userId}`)
         .then(response => {
           setUser(response.data);
         })
@@ -60,7 +63,7 @@ const MyAccount = () => {
     if (confirmed) {
       axios
         .put(
-          `http://localhost:8080/api/user/${currUser.userId}/image`,
+          `${BASE_URL}/api/user/${currUser.userId}/image`,
           promptImg,
           {
             headers: {

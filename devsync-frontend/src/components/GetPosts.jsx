@@ -4,9 +4,11 @@ import Image from 'react-bootstrap/Image';
 import pp1Image from '../assets/pp1.jpg';
 import FilterBy from './FilterBy';
 import Sync from './Sync';
+import { useNavigate } from 'react-router-dom';
 
 const GetPosts = ({ createAlert, userId, userRole, createSync }) => {
   const BASE_URL = import.meta.env.VITE_BASE_URL;
+  const navigate = useNavigate();
   const [posts, setPosts] = useState([]);
   const [lastPost, setLastPost] = useState(false);
   const [lastPostDate, setLastPostDate] = useState(
@@ -295,7 +297,7 @@ const GetPosts = ({ createAlert, userId, userRole, createSync }) => {
   };
 
   const handleUsernameClick = username => {
-    window.location.href = `/profile/${username}`;
+    navigate(`/profile/${username}`);
   };
 
   const handleSyncClick = (receiverId, receiverUsername) => {
@@ -304,9 +306,9 @@ const GetPosts = ({ createAlert, userId, userRole, createSync }) => {
       return;
     }
     createSync({
-      receiverId: post.userId,
+      receiverId: receiverId,
       senderId: currUser.userId,
-      receiverUsername: post.username,
+      receiverUsername: receiverUsername,
       syncShow: true
     });
   };

@@ -1,10 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import {
-  BrowserRouter,
-  Link,
-  Route,
-  Routes
-} from 'react-router-dom';
+import { HashRouter, Link, Route, Routes } from 'react-router-dom';
 import {
   SignIn,
   SignUp,
@@ -23,9 +18,8 @@ const App = () => {
   const [loggedIn, setLoggedIn] = useState(false);
   const [open, setOpen] = useState(false);
   const refOpen = useRef(null);
-
+  const currUser = JSON.parse(localStorage.getItem('user'));
   useEffect(() => {
-    const currUser = JSON.parse(localStorage.getItem('user'));
     if (currUser) {
       const token = currUser.jwt;
       const headers = {
@@ -53,13 +47,14 @@ const App = () => {
             setLoggedIn(false);
             localStorage.removeItem('user');
           } else {
+            localStorage.removeItem('user');
             console.log(error);
           }
         });
     } else {
       setLoggedIn(false);
     }
-  }, []);
+  }, [currUser]);
 
   useEffect(() => {
     document.addEventListener('click', handleClickOutside, true);
@@ -72,7 +67,7 @@ const App = () => {
   };
 
   return (
-    <BrowserRouter>
+    <HashRouter>
       <header className="flex flex-row justify-end md:text-lg">
         <Link to="/">
           <h4 className="p-4 absolute left-0 hover:text-zinc-500">
@@ -147,7 +142,7 @@ const App = () => {
           </div>
         </div>
       </footer>
-    </BrowserRouter>
+    </HashRouter>
   );
 };
 

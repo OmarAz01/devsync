@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const Home = () => {
   return (
@@ -10,11 +11,11 @@ const Home = () => {
         </h4>
         <div className="flex flex-row pt-4 md:justify-start justify-center pb-8 border-b border-zinc-700">
           <button className="md:text-xl text-base hover:bg-blue-500 py-1 px-2 h-fit w-fit border-2 border-black shadow-sm rounded-md bg-zinc-900 hover:cursor-pointer">
-            <a href="/signup">Create your account</a>
+            <Link to="/signup">Create your account</Link>
           </button>
           <h4 className="md:text-2xl pt-1 text-lg px-4">or</h4>
           <button className="md:text-xl text-base hover:bg-blue-500 py-1 px-2 h-fit w-fit border-2 border-black shadow-sm rounded-md bg-zinc-900 hover:cursor-pointer">
-            <a href="/signin">Sign In</a>
+            <Link to="/signin">Sign in</Link>
           </button>
         </div>
         <div className="flex flex-col w-full py-8 md:items-start items-center text-center md:text-left">

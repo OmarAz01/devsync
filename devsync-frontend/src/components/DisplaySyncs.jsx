@@ -2,11 +2,13 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useNavigate } from 'react-router-dom';
 
 const DisplaySyncs = ({ userId }) => {
   const BASE_URL = import.meta.env.VITE_BASE_URL;
   const currUser = JSON.parse(localStorage.getItem('user'));
   const [syncs, setSyncs] = useState([]);
+  const navigate = useNavigate();
   useEffect(() => {
     axios
       .get(`${BASE_URL}/api/sync/received/user/${userId}`, {
@@ -26,13 +28,13 @@ const DisplaySyncs = ({ userId }) => {
   }, []);
 
   const handleUsernameClick = username => {
-    window.location.href = `/profile/${username}`;
+    navigate(`/profile/${username}`);
   };
 
   return (
     <div className="flex flex-col pt-4">
       {syncs.length === 0 ? (
-        <h1>Hey</h1>
+        <h1>No syncs yet</h1>
       ) : (
         syncs.map(sync => {
           return (

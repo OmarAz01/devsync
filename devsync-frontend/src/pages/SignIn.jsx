@@ -1,14 +1,23 @@
 import axios from 'axios';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { Link, useNavigate } from 'react-router-dom';
 
 const SignIn = () => {
   const [userDetails, setUserDetails] = useState({
     email: '',
     password: ''
   });
+  const navigate = useNavigate();
   const BASE_URL = import.meta.env.VITE_BASE_URL;
+
+  useEffect(() => {
+    const currUser = JSON.parse(localStorage.getItem('user'));
+    if (currUser) {
+      navigate('/myaccount');
+    }
+  }, []);
 
   const handleLogin = async e => {
     e.preventDefault();
@@ -19,7 +28,7 @@ const SignIn = () => {
         userDetails
       );
       localStorage.setItem('user', JSON.stringify(response.data));
-      window.location.href = '/myaccount';
+      navigate('/myaccount');
     } catch (error) {
       if (error.response.status === 403) {
         toast.error('Invalid Credentials');
@@ -84,9 +93,9 @@ const SignIn = () => {
         <div className="text-center pt-12 pb-12">
           <p>
             Don't have an account?{' '}
-            <a href="/signup" className="underline font-semibold">
+            <Link to="/signup" className="underline font-semibold">
               Register here.
-            </a>
+            </Link>
           </p>
         </div>
       </div>

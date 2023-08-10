@@ -1,5 +1,6 @@
 import axios from 'axios';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -11,6 +12,14 @@ const SignUp = () => {
     password: '',
     passwordConfirmation: ''
   });
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const currUser = JSON.parse(localStorage.getItem('user'));
+    if (currUser) {
+      navigate('/myaccount');
+    }
+  }, []);
 
   const handleRegister = e => {
     e.preventDefault();
@@ -44,7 +53,7 @@ const SignUp = () => {
           );
           toast.success('Registered successfully redirecting...');
           setTimeout(() => {
-            window.location.href = '/myaccount';
+            navigate('/myaccount');
           }, 5000);
         })
         .catch(error => {
@@ -143,9 +152,9 @@ const SignUp = () => {
         <div className="text-center pt-12 pb-12">
           <p>
             Already have an account?{' '}
-            <a href="/signin" className="underline font-semibold">
+            <Link to="/signin" className="underline font-semibold">
               Log in here.
-            </a>
+            </Link>
           </p>
         </div>
       </div>

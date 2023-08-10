@@ -1,11 +1,14 @@
 import axios from 'axios';
 import React, { useEffect } from 'react';
+import { Nav } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const SignOut = () => {
   const BASE_URL = import.meta.env.VITE_BASE_URL;
   const currUser = JSON.parse(localStorage.getItem('user'));
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (currUser) {
@@ -22,7 +25,7 @@ const SignOut = () => {
             );
             localStorage.removeItem('user');
             setTimeout(() => {
-              window.location.href = '/signin';
+              navigate('/signin');
             }, 3000);
           }
         })
@@ -30,7 +33,7 @@ const SignOut = () => {
           toast.error('Something went wrong');
         });
     } else {
-      window.location.href = '/signin';
+      navigate('/signin');
     }
   }, []);
 

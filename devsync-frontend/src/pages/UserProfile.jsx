@@ -4,44 +4,39 @@ import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
 import Image from 'react-bootstrap/Image';
 import pp1Image from '../assets/pp1.jpg';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const UserProfile = () => {
   const [user, setUser] = useState({});
   const currUser = JSON.parse(localStorage.getItem('user'));
-
+  const BASE_URL = import.meta.env.VITE_BASE_URL;
+  const location = useLocation();
+  const navigate = useNavigate();
   useEffect(() => {
     // Get the username from the URL
-    const pathname = window.location.pathname;
-    const usernameFromURL = pathname.split('/')[2];
+    const usernameFromURL = location.pathname.split('/')[2];
 
     if (usernameFromURL) {
       axios
-        .get(
-          `http://localhost:8080/api/user/profile/${usernameFromURL}`
-        )
+        .get(`${BASE_URL}/api/user/profile/${usernameFromURL}`)
         .then(response => {
-          response.data.userId === currUser.userId
-            ? (window.location.href = '/myaccount')
-            : setUser(response.data);
+          if (currUser && response.data.userId === currUser.userId) {
+            navigate('/myaccount');
+          }
+          setUser(response.data);
         })
         .catch(error => {
-          if (error.response.status === 404) {
+          if (error.response && error.response.status === 404) {
+            toast.error('User not found');
             setUser(null);
+            return;
           }
           console.log(error);
         });
     } else {
       setUser(null);
     }
-  }, [window.location.pathname]);
-
-  const createAlert = (title, variant) => {
-    if (variant === 'success') {
-      return toast.success(title);
-    } else {
-      return toast.error(title);
-    }
-  };
+  }, [location.pathname]);
 
   return user ? (
     <div className="flex flex-col justify-center items-center p-5">
@@ -111,6 +106,11 @@ const UserProfile = () => {
       <h4 className="md:text-2xl text-xl font-bold text-neutral-100">
         User not found
       </h4>
+      <button
+        onClick={() => navigate('/feed')}
+        className="mt-4 bg-zinc-700 hover:bg-zinc-600 text-neutral-100 font-bold py-2 px-4 rounded">
+        Back to the feed
+      </button>
     </div>
   );
 };
