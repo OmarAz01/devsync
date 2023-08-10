@@ -1,8 +1,8 @@
 # devsync  
 A website to connect and work with other developers  
 ## WARNING !!!  
-### Please dont use a real email or password on the site
-### To access the backend api you need to enable insecure content because it is http  
+### Please dont use a real email or password on the demo site
+### To access the demo site's api you need to enable insecure content because it is http  
 #### Step 1:  
 <img width="406" alt="26uYb" src="https://github.com/OmarAz01/devsync/assets/118571302/7fed4ed8-4602-4a7e-9f90-cb66fcaba4a5">  
 
