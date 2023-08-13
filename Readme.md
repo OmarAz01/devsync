@@ -1,5 +1,6 @@
 # devsync  
 A website to connect and work with other developers  
+Developed using React, Spring, MySQL, and AWS  
 ## WARNING !!!  
 ### Please dont use a real email or password on the [demo site](https://www.devsync.org)
 ### To access the demo site's api features (create an account, browse and create a post) you need to enable insecure content because backend is served on http  
