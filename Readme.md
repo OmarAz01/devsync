@@ -1,6 +1,7 @@
 # devsync  
 A website to connect and work with other developers  
 Developed using React, Spring, MySQL, and AWS  
+Backend currently not live
 
 ## How to run  
 1- Clone the repo locally  
