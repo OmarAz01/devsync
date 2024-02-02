@@ -1,12 +1,11 @@
 # devsync  
 A website to connect and work with other developers  
 Developed using React, Spring, MySQL, and AWS  
-Backend currently not live
+## Do not input any sensitive information on the site  
 
-## How to run  
-1- Clone the repo locally  
-2- Make sure you have mysql installed  
-3- Create an application.properties file for the backend under src/main/resources and fill it with the connection details that match your local MySQL installation  
-4- Create a .env file for the frontend under src that includes: VITE_URL="Your spring url here"  
-5- Build the maven application and run the maven project  
-6- Run the react project using "npm run dev"
+## How to access  
+### Go to site settings  
+<img width="968" alt="secure (2)" src="https://github.com/OmarAz01/devsync/assets/118571302/507a74d1-fef1-420d-92db-6564a498f884">  
+  
+### Scroll down and turn off insecure content  
+![insecure-content-block](https://github.com/OmarAz01/devsync/assets/118571302/9a2cc734-0cc3-4908-888e-49127793703b)
