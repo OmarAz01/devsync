@@ -8,4 +8,4 @@ Once you have Docker installed fork the project to your local machine, and run t
 docker-compose up  
 
 ## Snapshot  
-![Feed](https://github.com/OmarAz01/devsync/assets/118571302/66a830d9-ec20-4e12-8a52-f7d8a7d8c7ff)
+![Feed](https://github.com/OmarAz01/devsync/assets/118571302/79123a88-51fe-4d51-8302-1938f6912534)
