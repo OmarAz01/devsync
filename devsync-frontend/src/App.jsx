@@ -19,6 +19,7 @@ const App = () => {
   const [open, setOpen] = useState(false);
   const refOpen = useRef(null);
   const currUser = JSON.parse(localStorage.getItem('user'));
+
   useEffect(() => {
     if (currUser) {
       const token = currUser.jwt;
@@ -54,7 +55,7 @@ const App = () => {
     } else {
       setLoggedIn(false);
     }
-  }, [currUser]);
+  }, []);
 
   useEffect(() => {
     document.addEventListener('click', handleClickOutside, true);
